@@ -90,6 +90,22 @@ const plates = defineCollection({
     }),
 });
 
+const cover = defineCollection({
+  type: 'data',
+  schema: ({ image }) =>
+    z.object({
+      items: z
+        .array(
+          z.object({
+            image: image(),
+            alt: z.string().min(5).max(160),
+            caption: z.string().optional(),
+          })
+        )
+        .min(1, 'At least one cover image is required.'),
+    }),
+});
+
 const pages = defineCollection({
   type: 'data',
   schema: ({ image }) =>
@@ -104,4 +120,4 @@ const pages = defineCollection({
     }),
 });
 
-export const collections = { blog, projects, plates, pages };
+export const collections = { blog, projects, plates, cover, pages };

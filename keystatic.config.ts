@@ -13,13 +13,43 @@ export default config({
   ui: {
     brand: { name: 'The Atunbi Experience' },
     navigation: {
-      Site: ['plates', 'pages'],
+      Site: ['cover', 'plates', 'pages'],
       Editorial: ['blog', 'projects'],
       SEO: ['seoKeywords'],
     },
   },
 
   singletons: {
+    cover: singleton({
+      label: 'Homepage Cover Slider',
+      path: 'src/content/cover/index',
+      format: { data: 'json' },
+      schema: {
+        items: fields.array(
+          fields.object({
+            image: fields.image({
+              label: 'Image (landscape — best ~2400×1500)',
+              directory: 'src/assets/uploads/cover',
+              publicPath: '/uploads/cover/',
+              validation: { isRequired: true },
+            }),
+            alt: fields.text({
+              label: 'Alt text (REQUIRED for SEO + accessibility)',
+              validation: { length: { min: 5, max: 160 } },
+              description: 'Describe the image as if reading it to someone who cannot see it.',
+            }),
+            caption: fields.text({
+              label: 'Caption (shown below the image, e.g. "Plate I · Mayfair, 2026")',
+            }),
+          }),
+          {
+            label: 'Cover slide',
+            itemLabel: (props) => props.fields.alt.value || 'Slide',
+          }
+        ),
+      },
+    }),
+
     plates: singleton({
       label: 'Homepage Plates',
       path: 'src/content/plates/index',

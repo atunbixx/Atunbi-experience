@@ -1,12 +1,16 @@
 ---
 import PageLayout from '@layouts/PageLayout.astro';
 import PlateCard from '@components/PlateCard.astro';
+import CoverSlider from '@components/CoverSlider.astro';
 import Lightbox from '@components/Lightbox.astro';
 import { getCollection, getEntry } from 'astro:content';
 import { SITE } from '@lib/site';
 
 const platesEntry = await getEntry('plates', 'index');
 const plates = platesEntry?.data.items ?? [];
+
+const coverEntry = await getEntry('cover', 'index');
+const coverSlides = coverEntry?.data.items ?? [];
 
 const allPosts = (await getCollection('blog', ({ data }) => !data.draft)).sort(
   (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
@@ -45,9 +49,13 @@ const seo = {
           <a href="#plates" class="btn btn-outline">Turn The Page</a>
         </div>
       </div>
-      <div class="cover-image placeholder">
-        <span class="cover-image-caption">Plate I · Cover Frame · Mayfair, 2026</span>
-      </div>
+      {coverSlides.length > 0 ? (
+        <CoverSlider slides={coverSlides} />
+      ) : (
+        <div class="cover-image placeholder">
+          <span class="cover-image-caption">Plate I · Cover Frame · Mayfair, 2026</span>
+        </div>
+      )}
     </div>
   </section>
 
