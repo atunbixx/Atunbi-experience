@@ -60,7 +60,7 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
 
   const apiKey = import.meta.env.RESEND_API_KEY;
   const to = import.meta.env.CONTACT_TO_EMAIL ?? 'hello@atunbi.com';
-  const from = import.meta.env.CONTACT_FROM_EMAIL ?? 'site@theatunbiexperience.co.uk';
+  const from = import.meta.env.CONTACT_FROM_EMAIL ?? 'site@theatunbiexperience.com';
 
   if (!apiKey) {
     console.warn('[contact] RESEND_API_KEY not configured — payload:', payload);
@@ -69,7 +69,7 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
 
   const subject = `[Enquiry] ${payload.eventType ?? 'General'} — ${payload.name}`;
   const text = [
-    `New enquiry via theatunbiexperience.co.uk`,
+    `New enquiry via theatunbiexperience.com`,
     ``,
     `Name:    ${payload.name}`,
     `Email:   ${payload.email}`,

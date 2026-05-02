@@ -7,7 +7,7 @@ import vercel from '@astrojs/vercel';
 import keystatic from '@keystatic/astro';
 import { keywordLinker } from './src/lib/keyword-linker.mjs';
 
-const SITE_URL = process.env.SITE_URL ?? 'https://www.theatunbiexperience.co.uk';
+const SITE_URL = process.env.SITE_URL ?? 'https://www.theatunbiexperience.com';
 
 // https://astro.build/config
 export default defineConfig({

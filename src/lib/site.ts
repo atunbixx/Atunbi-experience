@@ -11,7 +11,7 @@ export const SITE = {
   description:
     'Editorial photography for London\'s most considered weddings, galas and portrait sittings — captured quietly, finished by hand.',
   defaultLocale: 'en-GB',
-  url: import.meta.env.SITE ?? 'https://www.theatunbiexperience.co.uk',
+  url: import.meta.env.SITE ?? 'https://www.theatunbiexperience.com',
   twitter: '@atunbi',
   established: 2016,
   issueLabel: 'Issue N° 01',

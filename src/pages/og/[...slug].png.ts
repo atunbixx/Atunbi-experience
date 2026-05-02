@@ -95,7 +95,7 @@ export const GET: APIRoute<PathProps> = async ({ props }) => {
             style: { display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', fontSize: 18, letterSpacing: 4, textTransform: 'uppercase', color: ink },
             children: [
               { type: 'div', props: { style: { fontSize: 36, fontStyle: 'italic', color: burgundy }, children: 'The Atunbi Experience' } },
-              { type: 'div', props: { style: { color: gold }, children: 'theatunbiexperience.co.uk' } },
+              { type: 'div', props: { style: { color: gold }, children: 'theatunbiexperience.com' } },
             ],
           },
         },
