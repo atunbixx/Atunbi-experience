@@ -1,0 +1,47 @@
+---
+import PageLayout from '@layouts/PageLayout.astro';
+import { SITE } from '@lib/site';
+
+const breadcrumbs = [
+  { name: 'Home', url: '/' },
+  { name: 'About', url: '/about' },
+];
+---
+<PageLayout
+  title="About Atunbi — London Editorial Photographer"
+  description="Atunbi is a London-based editorial photographer with a decade behind the camera, trained in editorial composition and drawn to quiet, natural light."
+  keywords={['editorial photographer London', 'Atunbi photographer', 'London wedding photographer']}
+  jsonLdType="about"
+  breadcrumbs={breadcrumbs}
+>
+  <section class="meet-section">
+    <div class="container">
+      <nav class="breadcrumbs" aria-label="Breadcrumb">
+        <a href="/">Home</a><span class="sep">/</span><span>About</span>
+      </nav>
+    </div>
+    <div class="meet-grid">
+      <div class="meet-portrait placeholder"></div>
+      <div class="meet-content">
+        <div class="feature-tag">Feature · Profile</div>
+        <h1>Meet <em>Atunbi.</em></h1>
+        <p class="standfirst">A decade behind the camera, a London-trained editorial eye, and a quiet obsession with the moments most people miss.</p>
+        <p><span class="drop-cap">L</span>ondon-based with a decade of experience capturing the city's most considered weddings, corporate events and portrait sessions. Trained in editorial composition, drawn to natural light, and obsessed with the moments most people miss.</p>
+        <p>The studio works exclusively with clients who care about how their event looks years later — not just on the day. Every project is treated as a single body of work, from venue walk-through to the final delivered gallery.</p>
+        <p>Whether the brief is a thirty-guest Mayfair wedding, a four-hundred-person Canary Wharf gala, or a quiet editorial portrait sitting, the standard is the same: discreet on the day, hand-finished afterwards, delivered as a curated body of work rather than a phone-dump.</p>
+        <div class="credits">
+          <div class="credits-label">Notable Work</div>
+          <div class="credits-list">Mayfair private weddings · Royal Society galas<br />Canary Wharf corporate campaigns · Tate Modern launches<br />Editorial portraits for FT, Time Out and Hospitality Weekly</div>
+        </div>
+        <div class="credits">
+          <div class="credits-label">Studio</div>
+          <div class="credits-list">Established {SITE.established} · London, UK<br />Available for travel across the UK and internationally</div>
+        </div>
+        <div style="margin-top:2rem; display:flex; gap:1rem; flex-wrap:wrap;">
+          <a href="/portfolio" class="btn btn-outline">See The Work</a>
+          <a href="/contact" class="btn btn-burgundy">Begin The Conversation</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</PageLayout>

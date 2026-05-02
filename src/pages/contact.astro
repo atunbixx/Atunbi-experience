@@ -1,0 +1,124 @@
+---
+import PageLayout from '@layouts/PageLayout.astro';
+import { CONTACT } from '@lib/site';
+
+const turnstileKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY ?? '';
+const breadcrumbs = [
+  { name: 'Home', url: '/' },
+  { name: 'Contact', url: '/contact' },
+];
+---
+<PageLayout
+  title="Contact — Begin The Conversation"
+  description="Tell us about your event and we'll come back with a quiet, considered proposal within 24 hours. Editorial photography for London weddings, galas and portraits."
+  keywords={['contact London wedding photographer', 'enquire wedding photography London']}
+  jsonLdType="contact"
+  breadcrumbs={breadcrumbs}
+>
+  <section>
+    <div class="container">
+      <nav class="breadcrumbs" aria-label="Breadcrumb">
+        <a href="/">Home</a><span class="sep">/</span><span>Contact</span>
+      </nav>
+
+      <div class="section-divider">Section · Correspondence</div>
+      <h1 class="section-title">Begin The <em>Conversation.</em></h1>
+      <p class="section-subtitle">Tell us the date, the venue, and what you'd like to remember. We'll come back with a quiet, considered proposal within twenty-four hours.</p>
+
+      <form class="form" id="contact-form" method="POST" action="/api/contact" novalidate>
+        <div>
+          <label for="name">Your name</label>
+          <input id="name" name="name" type="text" required minlength="2" maxlength="120" autocomplete="name" />
+        </div>
+
+        <div class="form-row">
+          <div>
+            <label for="email">Email</label>
+            <input id="email" name="email" type="email" required autocomplete="email" />
+          </div>
+          <div>
+            <label for="phone">Phone (optional)</label>
+            <input id="phone" name="phone" type="tel" autocomplete="tel" />
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div>
+            <label for="eventType">Type of event</label>
+            <select id="eventType" name="eventType" required>
+              <option value="">Choose one…</option>
+              <option value="wedding">Wedding</option>
+              <option value="gala">Gala / corporate event</option>
+              <option value="portrait">Portrait sitting</option>
+              <option value="brand">Brand campaign</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+          <div>
+            <label for="eventDate">Date (or rough month)</label>
+            <input id="eventDate" name="eventDate" type="text" placeholder="e.g. June 2026" />
+          </div>
+        </div>
+
+        <div>
+          <label for="venue">Venue or area</label>
+          <input id="venue" name="venue" type="text" placeholder="e.g. Mayfair, Canary Wharf, TBC" />
+        </div>
+
+        <div>
+          <label for="message">Tell us about your day</label>
+          <textarea id="message" name="message" required minlength="20" maxlength="4000" placeholder="Guest count, the feeling you'd like to capture, anything else worth knowing."></textarea>
+        </div>
+
+        <input type="text" name="company" tabindex="-1" autocomplete="off" style="position:absolute; left:-9999px;" aria-hidden="true" />
+
+        {turnstileKey && (
+          <div class="cf-turnstile" data-sitekey={turnstileKey} data-theme="light"></div>
+        )}
+
+        <div>
+          <button type="submit" class="btn btn-burgundy">Send Enquiry</button>
+        </div>
+
+        <div class="form-status" id="form-status" hidden></div>
+      </form>
+
+      <div style="text-align:center; margin-top: 4rem; font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--ink-soft);">
+        Or write directly · <a href={`mailto:${CONTACT.email}`} style="color: var(--burgundy); text-decoration: none;">{CONTACT.email}</a>
+      </div>
+    </div>
+  </section>
+
+  {turnstileKey && (
+    <script slot="head" src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+  )}
+
+  <script>
+    const form = document.getElementById('contact-form') as HTMLFormElement | null;
+    const status = document.getElementById('form-status');
+    if (form && status) {
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        status.hidden = false;
+        status.className = 'form-status';
+        status.textContent = 'Sending…';
+        try {
+          const data = new FormData(form);
+          const res = await fetch(form.action, { method: 'POST', body: data });
+          const json = await res.json().catch(() => ({}));
+          if (res.ok) {
+            status.className = 'form-status success';
+            status.textContent = 'Thank you — we have your message and will reply within 24 hours.';
+            form.reset();
+          } else {
+            status.className = 'form-status error';
+            status.textContent = json.error ?? 'Something went wrong. Please try again or email us directly.';
+          }
+        } catch {
+          status.className = 'form-status error';
+          status.textContent = 'Network error. Please try again or email us directly.';
+        }
+      });
+    }
+  </script>
+</PageLayout>

@@ -1,0 +1,52 @@
+{
+  "items": [
+    {
+      "number": "Plate I",
+      "title": "A Mayfair Wedding",
+      "category": "Weddings",
+      "alt": "Bride and groom photographed in a Mayfair townhouse — placeholder.",
+      "placeholderClass": "plate-1",
+      "href": "/portfolio"
+    },
+    {
+      "number": "Plate II",
+      "title": "Boardroom & Brand",
+      "category": "Corporate",
+      "alt": "Corporate boardroom portrait session — placeholder.",
+      "placeholderClass": "plate-2",
+      "href": "/portfolio"
+    },
+    {
+      "number": "Plate III",
+      "title": "Editorial Portraits",
+      "category": "Portraits",
+      "alt": "Editorial studio portrait in low-key lighting — placeholder.",
+      "placeholderClass": "plate-3",
+      "href": "/portfolio"
+    },
+    {
+      "number": "Plate IV",
+      "title": "Black Tie & Light",
+      "category": "Galas",
+      "alt": "Black-tie gala photography in low light — placeholder.",
+      "placeholderClass": "plate-4",
+      "href": "/portfolio"
+    },
+    {
+      "number": "Plate V",
+      "title": "Cultural Celebrations",
+      "category": "Cultural",
+      "alt": "Cultural celebration photography — placeholder.",
+      "placeholderClass": "plate-5",
+      "href": "/portfolio"
+    },
+    {
+      "number": "Plate VI",
+      "title": "Brand Campaigns",
+      "category": "Brand",
+      "alt": "Brand campaign photography — placeholder.",
+      "placeholderClass": "plate-6",
+      "href": "/portfolio"
+    }
+  ]
+}

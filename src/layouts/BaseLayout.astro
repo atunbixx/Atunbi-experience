@@ -1,0 +1,78 @@
+---
+import '../styles/global.css';
+import SEOHead from '@components/seo/SEOHead.astro';
+import JsonLd from '@components/seo/JsonLd.astro';
+import { SITE } from '@lib/site';
+
+export interface Props {
+  title: string;
+  description: string;
+  canonical?: string;
+  image?: string;
+  imageAlt?: string;
+  type?: 'website' | 'article';
+  publishedTime?: string;
+  modifiedTime?: string;
+  author?: string;
+  keywords?: string[];
+  noindex?: boolean;
+  jsonLdType?: 'home' | 'article' | 'project' | 'about' | 'contact' | 'page';
+  article?: import('@components/seo/JsonLd.astro').Props['article'];
+  breadcrumbs?: Array<{ name: string; url: string }>;
+}
+
+const {
+  title,
+  description,
+  canonical,
+  image,
+  imageAlt,
+  type = 'website',
+  publishedTime,
+  modifiedTime,
+  author,
+  keywords,
+  noindex,
+  jsonLdType = 'page',
+  article,
+  breadcrumbs,
+} = Astro.props;
+---
+<!DOCTYPE html>
+<html lang={SITE.defaultLocale}>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="alternate" type="application/rss+xml" title={`${SITE.name} — Journal`} href="/rss.xml" />
+  <link rel="sitemap" type="application/xml" href="/sitemap-index.xml" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,600;0,9..144,700;0,9..144,900;1,9..144,300;1,9..144,400&family=JetBrains+Mono:wght@400;500&display=swap"
+    rel="stylesheet"
+  />
+
+  <SEOHead
+    title={title}
+    description={description}
+    canonical={canonical}
+    image={image}
+    imageAlt={imageAlt}
+    type={type}
+    publishedTime={publishedTime}
+    modifiedTime={modifiedTime}
+    author={author}
+    keywords={keywords}
+    noindex={noindex}
+  />
+
+  <JsonLd type={jsonLdType} article={article} breadcrumbs={breadcrumbs} />
+
+  <slot name="head" />
+</head>
+<body>
+  <slot />
+</body>
+</html>

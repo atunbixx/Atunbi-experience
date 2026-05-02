@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /keystatic
+Disallow: /admin
+Disallow: /api/
+
+Sitemap: https://www.theatunbiexperience.co.uk/sitemap-index.xml

@@ -1,0 +1,16 @@
+---
+import { SITE } from '@lib/site';
+---
+<header class="masthead">
+  <div class="masthead-meta">
+    <span class="issue">{SITE.issueLabel}</span>
+    <span>{SITE.issueDate}</span>
+  </div>
+  <a href="/" class="masthead-title" aria-label={`${SITE.name} home`}>
+    The Atunbi <em>Experience</em>
+  </a>
+  <div class="masthead-right">
+    <span style="display:block; color:var(--burgundy); font-weight:500; margin-bottom:0.3rem;">{SITE.vol}</span>
+    <span>{SITE.category}</span>
+  </div>
+</header>

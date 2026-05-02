@@ -1,0 +1,53 @@
+---
+import PageLayout from '@layouts/PageLayout.astro';
+import { getCollection } from 'astro:content';
+
+const projects = (await getCollection('projects', ({ data }) => !data.draft)).sort(
+  (a, b) => a.data.order - b.data.order
+);
+
+const ROMAN = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI', 'XII'];
+const toRoman = (n: number) => ROMAN[n - 1] ?? String(n);
+
+const breadcrumbs = [
+  { name: 'Home', url: '/' },
+  { name: 'Portfolio', url: '/portfolio' },
+];
+---
+<PageLayout
+  title="Portfolio — Selected London Photography Work"
+  description="Selected work across London weddings, corporate galas, editorial portraits and brand campaigns. Hand-picked plates from recent assignments."
+  keywords={['London wedding photography portfolio', 'editorial photographer portfolio', 'gala photographer London']}
+  breadcrumbs={breadcrumbs}
+>
+  <section class="plates-section">
+    <div class="container">
+      <nav class="breadcrumbs" aria-label="Breadcrumb">
+        <a href="/">Home</a><span class="sep">/</span><span>Portfolio</span>
+      </nav>
+
+      <div class="section-divider">Section · Portfolio</div>
+      <h1 class="section-title">Selected <em>Plates.</em></h1>
+      <p class="section-subtitle">A curated edit of recent work across weddings, galas, editorial portraits and brand campaigns.</p>
+
+      {projects.length === 0 ? (
+        <p style="text-align:center; font-style:italic; color:var(--ink-soft);">
+          Portfolio entries are being prepared. Add real projects via the <a href="/keystatic" style="color:var(--burgundy);">studio dashboard</a>.
+        </p>
+      ) : (
+        <div class="plates-grid">
+          {projects.map((project, i) => (
+            <a href={`/portfolio/${project.slug}`} class="plate-card">
+              <div class={`plate-image plate-${(i % 6) + 1}`}></div>
+              <div class="plate-meta">
+                <span class="plate-number">Plate {toRoman(i + 1)}</span>
+                <span class="plate-category">{project.data.category}</span>
+              </div>
+              <h2 class="plate-title">{project.data.title}</h2>
+            </a>
+          ))}
+        </div>
+      )}
+    </div>
+  </section>
+</PageLayout>
