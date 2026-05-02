@@ -1,0 +1,45 @@
+---
+import PageLayout from '@layouts/PageLayout.astro';
+
+const breadcrumbs = [
+  { name: 'Home', url: '/' },
+  { name: 'Lookbook', url: '/lookbook' },
+];
+---
+<PageLayout
+  title="Lookbook & Pricing — London Photography"
+  description="Wedding photography pricing and packages for London weddings, galas and editorial portraits. From £450 portrait sittings to full-day coverage from £1,800."
+  keywords={['wedding photography pricing', 'London wedding photographer', 'corporate event photographer', 'portrait photographer']}
+  breadcrumbs={breadcrumbs}
+>
+  <section class="lookbook-section">
+    <div class="container">
+      <nav class="breadcrumbs" aria-label="Breadcrumb">
+        <a href="/">Home</a><span class="sep">/</span><span>Lookbook</span>
+      </nav>
+
+      <div class="section-divider">Section · Lookbook</div>
+      <h1 class="section-title">Considered <em>Investment.</em></h1>
+      <p class="section-subtitle">Three considered routes — chosen by occasion, not by tier. Bespoke and combined options available on request.</p>
+      <div class="lookbook">
+        <div class="look"><div class="look-tag">N° 01</div><h2 class="look-name">The <em>Portrait</em></h2><p class="look-subtitle">Studio &amp; Editorial Sittings</p><div class="look-price-block">From £450 — half-day</div><ul><li>2-hour studio or location session</li><li>Two styled looks</li><li>20 hand-finished images</li><li>Personal use license</li><li>Delivered within 14 days</li></ul><a href="/contact" class="look-cta">Enquire</a></div>
+        <div class="look featured"><div class="look-tag">N° 02</div><h2 class="look-name">The <em>Event</em></h2><p class="look-subtitle">Weddings &amp; Galas</p><div class="look-price-block">From £1,800 — full day</div><ul><li>Up to 10 hours of coverage</li><li>Pre-event consultation &amp; venue scout</li><li>300+ edited images, fully retouched</li><li>Online private gallery</li><li>Print-ready files included</li><li>Optional second photographer</li></ul><a href="/contact" class="look-cta">Enquire</a></div>
+        <div class="look"><div class="look-tag">N° 03</div><h2 class="look-name">The <em>Brand</em></h2><p class="look-subtitle">Corporate &amp; Editorial</p><div class="look-price-block">From £1,200 — bespoke</div><ul><li>Brand-aligned creative direction</li><li>Headshots, lifestyle &amp; campaign work</li><li>Commercial usage rights</li><li>Web &amp; print-optimised delivery</li><li>Quarterly retainer available</li></ul><a href="/contact" class="look-cta">Enquire</a></div>
+      </div>
+
+      <div style="max-width:720px; margin: 5rem auto 0;">
+        <div class="section-divider">Frequently Asked</div>
+        <div class="article-body">
+          <h3>Are travel costs included?</h3>
+          <p>Within the M25, yes. Outside London, we add reasonable travel and (where applicable) one night of accommodation at cost.</p>
+          <h3>What about a deposit?</h3>
+          <p>We hold the date with a 25% retainer. The balance is due two weeks before the event.</p>
+          <h3>How long until I see the gallery?</h3>
+          <p>Portraits within fourteen days, weddings and galas within ten working days, with a press-select batch within forty-eight hours where required.</p>
+          <h3>Do you offer prints or albums?</h3>
+          <p>Yes — fine-art prints from £45 and bespoke linen albums from £450. Quoted alongside the main package.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+</PageLayout>

@@ -1,0 +1,16 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import Masthead from '@components/Masthead.astro';
+import Nav from '@components/Nav.astro';
+import Footer from '@components/Footer.astro';
+
+export type Props = import('./BaseLayout.astro').Props;
+const props = Astro.props;
+---
+<BaseLayout {...props}>
+  <slot name="head" slot="head" />
+  <Masthead />
+  <Nav />
+  <slot />
+  <Footer />
+</BaseLayout>

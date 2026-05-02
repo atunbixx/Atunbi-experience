@@ -1,0 +1,51 @@
+---
+import PageLayout from '@layouts/PageLayout.astro';
+import { getCollection } from 'astro:content';
+
+const posts = (await getCollection('blog', ({ data }) => !data.draft)).sort(
+  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
+);
+
+const breadcrumbs = [
+  { name: 'Home', url: '/' },
+  { name: 'Journal', url: '/blog' },
+];
+---
+<PageLayout
+  title="The Journal — Field Notes from Atunbi"
+  description="Field notes, behind-the-lens features and editorial reflections from London's most considered weddings, galas and portrait sittings."
+  keywords={['London wedding photography blog', 'editorial photographer London', 'wedding planning London']}
+  breadcrumbs={breadcrumbs}
+>
+  <section>
+    <div class="container">
+      <nav class="breadcrumbs" aria-label="Breadcrumb">
+        <a href="/">Home</a><span class="sep">/</span><span>Journal</span>
+      </nav>
+
+      <div class="section-divider">Section · Journal</div>
+      <h1 class="section-title">The <em>Journal.</em></h1>
+      <p class="section-subtitle">Field notes, behind-the-lens features and editorial reflections from recent assignments.</p>
+
+      {posts.length === 0 ? (
+        <p style="text-align:center; font-style:italic; color:var(--ink-soft);">No posts yet — check back soon.</p>
+      ) : (
+        <div class="blog-list">
+          {posts.map((post) => (
+            <a href={`/blog/${post.slug}`} class="blog-card">
+              <div class="blog-card-image"></div>
+              <div class="blog-card-meta">
+                <span class="blog-card-category">{post.data.category}</span>
+                <span class="blog-card-date">
+                  {post.data.pubDate.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}
+                </span>
+              </div>
+              <h2 class="blog-card-title">{post.data.title}</h2>
+              <p class="blog-card-deck">{post.data.description}</p>
+            </a>
+          ))}
+        </div>
+      )}
+    </div>
+  </section>
+</PageLayout>

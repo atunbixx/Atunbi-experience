@@ -1,0 +1,58 @@
+---
+import { Image } from 'astro:assets';
+
+interface GalleryItem {
+  src: ImageMetadata;
+  alt: string;
+  caption?: string;
+  project?: string;
+  projectHref?: string;
+}
+
+export interface Props {
+  images: GalleryItem[];
+  layout?: 'masonry' | 'justified';
+  groupId: string;
+  widths?: number[];
+  sizes?: string;
+}
+
+const {
+  images,
+  layout = 'masonry',
+  groupId,
+  widths = [480, 800, 1200, 1600],
+  sizes = '(max-width: 600px) 100vw, (max-width: 1000px) 50vw, 33vw',
+} = Astro.props;
+---
+{images.length > 0 && (
+  <div class={`gallery gallery--${layout}`} data-pswp-gallery={groupId}>
+    {images.map((item) => {
+      const aspectRatio = item.src.width / item.src.height;
+      return (
+        <a
+          href={item.src.src}
+          data-pswp-width={item.src.width}
+          data-pswp-height={item.src.height}
+          data-caption={item.caption ?? ''}
+          data-project={item.project ?? ''}
+          data-project-href={item.projectHref ?? ''}
+          aria-label={item.caption ? `${item.alt} — ${item.caption}` : item.alt}
+          style={`--ar:${aspectRatio.toFixed(3)}`}
+          data-reveal
+        >
+          <Image
+            src={item.src}
+            alt={item.alt}
+            widths={widths}
+            sizes={sizes}
+            loading="lazy"
+            decoding="async"
+            formats={['avif', 'webp']}
+          />
+          {item.caption && <span class="caption-overlay">{item.caption}</span>}
+        </a>
+      );
+    })}
+  </div>
+)}

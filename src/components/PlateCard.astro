@@ -1,0 +1,46 @@
+---
+import { Image } from 'astro:assets';
+
+export interface PlatePropsImage {
+  src: ImageMetadata;
+  alt: string;
+}
+
+export interface Props {
+  number: string;
+  title: string;
+  category: string;
+  href?: string;
+  image?: ImageMetadata;
+  alt: string;
+  placeholderClass?: string;
+}
+
+const { number, title, category, href = '/portfolio', image, alt, placeholderClass = '' } = Astro.props;
+
+const titleParts = title.split(' ');
+const titleEm = titleParts.length > 1 ? titleParts.slice(-1)[0] : title;
+const titleStart = titleParts.length > 1 ? titleParts.slice(0, -1).join(' ') : '';
+---
+<a href={href} class="plate-card" aria-label={`${title} — ${category}`}>
+  <div class={`plate-image ${placeholderClass}`}>
+    {image && (
+      <Image
+        src={image}
+        alt={alt}
+        widths={[480, 800, 1200]}
+        sizes="(max-width: 768px) 100vw, 50vw"
+        loading="lazy"
+        decoding="async"
+        formats={['avif', 'webp']}
+      />
+    )}
+  </div>
+  <div class="plate-meta">
+    <span class="plate-number">{number}</span>
+    <span class="plate-category">{category}</span>
+  </div>
+  <h3 class="plate-title">
+    {titleStart && <Fragment>{titleStart}{' '}</Fragment>}<em>{titleEm}</em>
+  </h3>
+</a>

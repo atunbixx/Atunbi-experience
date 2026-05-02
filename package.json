@@ -1,0 +1,44 @@
+{
+  "name": "atunbi-experience",
+  "type": "module",
+  "version": "0.1.0",
+  "private": true,
+  "description": "The Atunbi Experience — editorial photography studio, London.",
+  "scripts": {
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro build && node scripts/seo-check.mjs",
+    "build:no-audit": "astro build",
+    "preview": "astro preview",
+    "astro": "astro",
+    "seo:check": "node scripts/seo-check.mjs",
+    "format": "prettier --write \"**/*.{astro,ts,tsx,js,mjs,md,json,css}\""
+  },
+  "dependencies": {
+    "@astrojs/mdx": "^4.0.0",
+    "@astrojs/react": "^4.1.0",
+    "@astrojs/rss": "^4.0.0",
+    "@astrojs/sitemap": "^3.2.0",
+    "@astrojs/vercel": "^8.0.0",
+    "@keystatic/astro": "^5.0.0",
+    "@keystatic/core": "^0.5.0",
+    "@vercel/og": "^0.6.0",
+    "astro": "^5.0.0",
+    "photoswipe": "^5.4.4",
+    "react": "^18.3.0",
+    "react-dom": "^18.3.0",
+    "sharp": "^0.33.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "cheerio": "^1.0.0",
+    "globby": "^14.0.0",
+    "kleur": "^4.1.5",
+    "prettier": "^3.3.0",
+    "prettier-plugin-astro": "^0.14.0",
+    "typescript": "^5.6.0"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}
