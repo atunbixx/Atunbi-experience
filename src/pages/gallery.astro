@@ -1,0 +1,65 @@
+---
+import PageLayout from '@layouts/PageLayout.astro';
+import Gallery from '@components/Gallery.astro';
+import Lightbox from '@components/Lightbox.astro';
+import { getCollection } from 'astro:content';
+
+const projects = (await getCollection('projects', ({ data }) => !data.draft)).sort(
+  (a, b) => a.data.order - b.data.order
+);
+
+const allImages = projects.flatMap((project) =>
+  project.data.gallery.map((g) => ({
+    src: g.src,
+    alt: g.alt,
+    caption: g.caption,
+    project: project.data.title,
+    projectHref: `/portfolio/${project.slug}`,
+  }))
+);
+
+const breadcrumbs = [
+  { name: 'Home', url: '/' },
+  { name: 'Gallery', url: '/gallery' },
+];
+---
+<PageLayout
+  title="Gallery — Every Photograph"
+  description="The complete Atunbi photography archive — London weddings, galas, corporate events and editorial portraits, all in one lightbox-enabled view."
+  keywords={['London photographer gallery', 'wedding photography gallery London', 'editorial photographer archive']}
+  breadcrumbs={breadcrumbs}
+>
+  <section class="plates-section" style="padding-top: 4rem;">
+    <div class="container">
+      <nav class="breadcrumbs" aria-label="Breadcrumb">
+        <a href="/">Home</a><span class="sep">/</span><span>Gallery</span>
+      </nav>
+
+      <div class="section-divider" data-reveal>Section · Archive</div>
+      <h1 class="section-title" data-reveal>Every <em>Photograph.</em></h1>
+      <p class="section-subtitle" data-reveal>The complete archive across every project — click any frame to open the lightbox, swipe or use the arrow keys to browse.</p>
+
+      {allImages.length === 0 ? (
+        <p style="text-align:center; font-style:italic; color:var(--ink-soft); margin: 4rem 0;">
+          The archive is being prepared. Real photographs upload via the <a href="/keystatic" style="color:var(--burgundy);">studio dashboard</a> and appear here automatically.
+        </p>
+      ) : (
+        <div data-reveal>
+          <Gallery
+            images={allImages}
+            layout="masonry"
+            groupId="site-gallery"
+            sizes="(max-width: 600px) 100vw, (max-width: 900px) 50vw, 33vw"
+          />
+        </div>
+      )}
+
+      <div style="text-align:center; margin-top:3rem; display:flex; gap:1rem; justify-content:center; flex-wrap:wrap;" data-reveal>
+        <a href="/portfolio" class="btn btn-outline">Browse By Project</a>
+        <a href="/contact" class="btn btn-burgundy">Begin The Conversation</a>
+      </div>
+    </div>
+  </section>
+
+  <Lightbox />
+</PageLayout>

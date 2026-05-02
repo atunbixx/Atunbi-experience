@@ -1,0 +1,47 @@
+---
+import { Image } from 'astro:assets';
+
+export interface Props {
+  src?: ImageMetadata;
+  alt: string;
+  title: string;
+  titleEm?: string;
+  kicker?: string;
+  deck?: string;
+  scrim?: 'dark' | 'light';
+  height?: string;
+}
+
+const { src, alt, title, titleEm, kicker, deck, scrim = 'dark', height } = Astro.props;
+const styleAttr = height ? `height:${height}` : undefined;
+---
+<section class={`hero-bleed scrim-${scrim}`} style={styleAttr}>
+  {src ? (
+    <Image
+      src={src}
+      alt={alt}
+      widths={[640, 960, 1280, 1920, 2560]}
+      sizes="100vw"
+      loading="eager"
+      decoding="async"
+      formats={['avif', 'webp']}
+    />
+  ) : (
+    <div style="position:absolute; inset:0; background: linear-gradient(160deg, #2a0a14, #6B1A2A 50%, #4A1020); display:flex; align-items:center; justify-content:center;">
+      <span style="font-family:'Fraunces',serif; font-style:italic; font-weight:300; font-size:14rem; color:rgba(245,239,230,0.85);">A</span>
+    </div>
+  )}
+  <div class="hero-bleed-text">
+    <div class="container">
+      {kicker && <div class="hero-bleed-kicker">{kicker}</div>}
+      <h1 class="hero-bleed-title">
+        {titleEm ? (
+          <Fragment>{title}{' '}<em>{titleEm}</em></Fragment>
+        ) : (
+          title
+        )}
+      </h1>
+      {deck && <p class="hero-bleed-deck">{deck}</p>}
+    </div>
+  </div>
+</section>

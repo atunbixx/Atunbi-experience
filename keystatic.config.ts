@@ -219,6 +219,22 @@ export default config({
         featured: fields.checkbox({ label: 'Featured', defaultValue: false }),
         order: fields.integer({ label: 'Sort order (lower shows first)', defaultValue: 0 }),
         draft: fields.checkbox({ label: 'Draft', defaultValue: false }),
+        layoutStyle: fields.select({
+          label: 'Gallery layout',
+          options: [
+            { label: 'Masonry (Pinterest-style staggered columns)', value: 'masonry' },
+            { label: 'Justified rows (uniform-height rows)', value: 'justified' },
+          ],
+          defaultValue: 'masonry',
+        }),
+        heroOverlay: fields.select({
+          label: 'Hero scrim colour (for title legibility)',
+          options: [
+            { label: 'Dark scrim (light photos)', value: 'dark' },
+            { label: 'Light scrim (dark photos)', value: 'light' },
+          ],
+          defaultValue: 'dark',
+        }),
         body: fields.markdoc({ label: 'Project narrative' }),
       },
     }),

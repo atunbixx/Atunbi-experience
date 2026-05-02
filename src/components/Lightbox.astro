@@ -1,0 +1,10 @@
+---
+/**
+ * Astro client island: loads the lightbox + reveal + fade-in script lazily.
+ * Drop this once on any page that has a gallery, project grid, or reveal.
+ * Ships the smallest possible JS payload, deferred and out of the critical path.
+ */
+---
+<script>
+  import('../lib/lightbox');
+</script>

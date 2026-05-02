@@ -41,6 +41,6 @@ const titleStart = titleParts.length > 1 ? titleParts.slice(0, -1).join(' ') : '
     <span class="plate-category">{category}</span>
   </div>
   <h3 class="plate-title">
-    {titleStart && <Fragment>{titleStart} </Fragment>}<em>{titleEm}</em>
+    {titleStart && <Fragment>{titleStart}{' '}</Fragment>}<em>{titleEm}</em>
   </h3>
 </a>

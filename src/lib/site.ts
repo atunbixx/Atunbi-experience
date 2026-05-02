@@ -39,7 +39,7 @@ export const SOCIAL = {
 
 export const NAV: Array<{ label: string; href: string }> = [
   { label: 'Plates', href: '/portfolio' },
-  { label: 'Standard', href: '/#why' },
+  { label: 'Gallery', href: '/gallery' },
   { label: 'Lookbook', href: '/lookbook' },
   { label: 'Journal', href: '/blog' },
   { label: 'Atunbi', href: '/about' },

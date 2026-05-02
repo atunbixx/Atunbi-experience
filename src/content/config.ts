@@ -58,6 +58,8 @@ const projects = defineCollection({
       featured: z.boolean().default(false),
       order: z.number().default(0),
       draft: z.boolean().default(false),
+      layoutStyle: z.enum(['masonry', 'justified']).default('masonry'),
+      heroOverlay: z.enum(['dark', 'light']).default('dark'),
     }),
 });
 

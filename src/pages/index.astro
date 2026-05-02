@@ -1,6 +1,7 @@
 ---
 import PageLayout from '@layouts/PageLayout.astro';
 import PlateCard from '@components/PlateCard.astro';
+import Lightbox from '@components/Lightbox.astro';
 import { getCollection, getEntry } from 'astro:content';
 import { SITE } from '@lib/site';
 
@@ -190,4 +191,6 @@ const seo = {
     <p>Tell us the date, the venue, and what you'd like to remember. We'll come back with a quiet, considered proposal within 24 hours.</p>
     <a href="/contact" class="btn btn-burgundy">Begin The Conversation</a>
   </section>
+
+  <Lightbox />
 </PageLayout>
