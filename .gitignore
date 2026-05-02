@@ -32,3 +32,4 @@ pnpm-debug.log*
 
 # generated reports
 seo-report.json
+.vercel

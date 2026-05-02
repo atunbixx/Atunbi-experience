@@ -4,15 +4,17 @@
       "number": "Plate I",
       "title": "A Mayfair Wedding",
       "category": "Weddings",
-      "alt": "Bride and groom photographed in a Mayfair townhouse — placeholder.",
+      "image": "../../assets/uploads/plates/01-wedding.jpg",
+      "alt": "Bride and groom in formal attire, candle-lit interior, editorial wedding photograph.",
       "placeholderClass": "plate-1",
-      "href": "/portfolio"
+      "href": "/portfolio/mayfair-townhouse-wedding"
     },
     {
       "number": "Plate II",
       "title": "Boardroom & Brand",
       "category": "Corporate",
-      "alt": "Corporate boardroom portrait session — placeholder.",
+      "image": "../../assets/uploads/plates/02-corporate.jpg",
+      "alt": "Editorial corporate portrait in low-key boardroom lighting.",
       "placeholderClass": "plate-2",
       "href": "/portfolio"
     },
@@ -20,7 +22,8 @@
       "number": "Plate III",
       "title": "Editorial Portraits",
       "category": "Portraits",
-      "alt": "Editorial studio portrait in low-key lighting — placeholder.",
+      "image": "../../assets/uploads/plates/03-portrait.jpg",
+      "alt": "Editorial studio portrait with directional natural light.",
       "placeholderClass": "plate-3",
       "href": "/portfolio"
     },
@@ -28,15 +31,17 @@
       "number": "Plate IV",
       "title": "Black Tie & Light",
       "category": "Galas",
-      "alt": "Black-tie gala photography in low light — placeholder.",
+      "image": "../../assets/uploads/plates/04-gala.jpg",
+      "alt": "Black-tie gala photograph in low-key warm light.",
       "placeholderClass": "plate-4",
-      "href": "/portfolio"
+      "href": "/portfolio/canary-wharf-gala"
     },
     {
       "number": "Plate V",
       "title": "Cultural Celebrations",
       "category": "Cultural",
-      "alt": "Cultural celebration photography — placeholder.",
+      "image": "../../assets/uploads/plates/05-cultural.jpg",
+      "alt": "Editorial photograph from a cultural celebration in London.",
       "placeholderClass": "plate-5",
       "href": "/portfolio"
     },
@@ -44,7 +49,8 @@
       "number": "Plate VI",
       "title": "Brand Campaigns",
       "category": "Brand",
-      "alt": "Brand campaign photography — placeholder.",
+      "image": "../../assets/uploads/plates/06-brand.jpg",
+      "alt": "Brand campaign photograph — directional lighting, considered styling.",
       "placeholderClass": "plate-6",
       "href": "/portfolio"
     }
