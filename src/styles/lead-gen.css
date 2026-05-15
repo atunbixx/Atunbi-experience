@@ -1,0 +1,37 @@
+/*
+ * Lead-gen landing page additions.
+ * Imported only by /weddings, /events, /portrait-sittings pages so this CSS
+ * doesn't ship on pages that don't need it.
+ */
+
+:root {
+  --ink-line: rgba(26, 20, 16, 0.12);
+  --wa-green: #25D366;
+  --wa-green-hover: #1ebf5b;
+}
+
+.btn-wa {
+  background: var(--wa-green);
+  color: white;
+  border: 1px solid var(--wa-green);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.btn-wa:hover {
+  background: var(--wa-green-hover);
+  border-color: var(--wa-green-hover);
+  color: white;
+}
+
+.plate-grid img {
+  display: block;
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+}
+
+.lookbook-section details summary::-webkit-details-marker { display: none; }
+.lookbook-section details[open] summary span { transform: rotate(45deg); }
+.lookbook-section details summary span { display: inline-block; transition: transform 0.2s; }

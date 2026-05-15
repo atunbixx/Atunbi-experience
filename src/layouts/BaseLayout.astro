@@ -2,6 +2,7 @@
 import '../styles/global.css';
 import SEOHead from '@components/seo/SEOHead.astro';
 import JsonLd from '@components/seo/JsonLd.astro';
+import Pixel from '@components/Pixel.astro';
 import { SITE } from '@lib/site';
 
 export interface Props {
@@ -71,6 +72,7 @@ const {
   <JsonLd type={jsonLdType} article={article} breadcrumbs={breadcrumbs} />
 
   <slot name="head" />
+  <Pixel />
 </head>
 <body>
   <slot />

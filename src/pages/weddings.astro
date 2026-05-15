@@ -1,0 +1,166 @@
+---
+import PageLayout from '@layouts/PageLayout.astro';
+import LeadForm from '@components/LeadForm.astro';
+import WhatsAppCTA from '@components/WhatsAppCTA.astro';
+import { Image } from 'astro:assets';
+import { SERVICES } from '@lib/site';
+import '../styles/lead-gen.css';
+
+import hero from '../assets/uploads/projects/mayfair-townhouse-wedding/hero.jpg';
+import shot01 from '../assets/uploads/projects/mayfair-townhouse-wedding/01-ceremony.jpg';
+import shot02 from '../assets/uploads/projects/mayfair-townhouse-wedding/02-couple.jpg';
+import shot03 from '../assets/uploads/projects/mayfair-townhouse-wedding/03-rings.jpg';
+import shot04 from '../assets/uploads/projects/mayfair-townhouse-wedding/04-reception.jpg';
+import platePortrait from '../assets/uploads/plates/01-wedding.jpg';
+
+const service = SERVICES.find((s) => s.slug === 'weddings')!;
+
+const breadcrumbs = [
+  { name: 'Home', url: '/' },
+  { name: 'Weddings', url: '/weddings' },
+];
+
+const faqs = [
+  {
+    q: 'What is the difference between £1,200 and £1,800?',
+    a: '£1,200 buys six hours of coverage — typically ceremony, portraits and early reception. £1,800 buys the full day, from getting-ready candids through to first dance. Three hundred more frames, longer access, hand-finished album credit. Most couples land here.',
+  },
+  {
+    q: 'What if it rains?',
+    a: 'We have shot in August heat and December downpours; bad weather often produces the most striking frames. We scout indoor alternates during the venue visit, bring umbrellas, and never let the day fall apart over the forecast.',
+  },
+  {
+    q: 'Do you have insurance?',
+    a: 'Yes — £5M public liability and equipment cover. Certificates available on request and sent directly to your venue.',
+  },
+  {
+    q: 'How quickly do you reply?',
+    a: 'Within twenty-four hours, every time. WhatsApp is fastest if you would like a quicker word.',
+  },
+  {
+    q: 'Do we receive raw files?',
+    a: 'No — and this is industry-standard. You receive hand-finished, colour-graded high-resolution JPEGs. The raws are working files, not finished work.',
+  },
+  {
+    q: 'Can the balance be paid in instalments?',
+    a: 'Yes. Twenty-five percent retains the date; the balance can be split into three payments through the year preceding. No interest, no fees.',
+  },
+];
+
+const testimonials = [
+  {
+    quote: 'Quietly there all day. The gallery felt like the wedding, not a recreation of it.',
+    author: 'Sophie & James',
+    context: 'Mayfair Townhouse · September 2025',
+  },
+  {
+    quote: 'Calm, considered, in the right place at every moment we cared about. Mum cried at the album.',
+    author: 'Aisha & Tom',
+    context: 'Asia House · June 2025',
+  },
+  {
+    quote: 'We trusted them with the whole day and never thought about it again until the photos arrived.',
+    author: 'Lily & Idris',
+    context: 'Babington House · May 2025',
+  },
+];
+---
+<PageLayout
+  title="Editorial London Wedding Photography"
+  description="Editorial wedding photography for London. Six-hour coverage from £1,200; full-day coverage from £1,800. Discreet on the day, hand-finished after."
+  keywords={[
+    'London wedding photographer',
+    'editorial wedding photography London',
+    'Mayfair wedding photographer',
+    'luxury wedding photographer London',
+  ]}
+  jsonLdType="page"
+  breadcrumbs={breadcrumbs}
+>
+  <section class="lookbook-section">
+    <div class="container">
+      <nav class="breadcrumbs" aria-label="Breadcrumb">
+        <a href="/">Home</a><span class="sep">/</span><span>Weddings</span>
+      </nav>
+
+      <div class="section-divider">{service.eyebrow}</div>
+      <h1 class="section-title">A Wedding, <em>Quietly Made.</em></h1>
+      <p class="section-subtitle">{service.deck.replace(/^Editorial wedding photography for London\.\s*/, '')}</p>
+
+      <div class="cover-ctas" style="justify-content: flex-start; margin-top: 2rem;">
+        <a href="#enquire" class="btn btn-burgundy">Begin The Conversation</a>
+        <WhatsAppCTA prefill={service.waPrefill} source="weddings-hero" variant="outline" />
+        <a href="/lookbook" class="btn btn-outline">See The Lookbook</a>
+      </div>
+
+      <div style="margin-top: 4rem;">
+        <Image src={hero} alt="Mayfair townhouse wedding portrait" widths={[800, 1200, 1800]} sizes="(min-width: 900px) 1200px, 100vw" loading="eager" />
+      </div>
+    </div>
+  </section>
+
+  <section class="lookbook-section" style="padding-top: 0;">
+    <div class="container">
+      <div class="section-divider">Section · Plates From Weddings</div>
+      <h2 class="section-title">A Wedding, in <em>Eight Frames.</em></h2>
+
+      <div class="plate-grid" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; margin-top: 3rem;">
+        <Image src={shot01} alt="Ceremony, Mayfair townhouse" widths={[400, 800]} sizes="(min-width: 900px) 400px, 100vw" />
+        <Image src={shot02} alt="Couple portrait, golden hour" widths={[400, 800]} sizes="(min-width: 900px) 400px, 100vw" />
+        <Image src={shot03} alt="Rings detail" widths={[400, 800]} sizes="(min-width: 900px) 400px, 100vw" />
+        <Image src={shot04} alt="Reception dance floor" widths={[400, 800]} sizes="(min-width: 900px) 400px, 100vw" />
+        <Image src={platePortrait} alt="Editorial wedding portrait" widths={[400, 800]} sizes="(min-width: 900px) 400px, 100vw" />
+      </div>
+
+      <p style="text-align:center; margin-top: 3rem;">
+        <a href="/portfolio/mayfair-townhouse-wedding" class="btn btn-outline">Open The Case Study</a>
+      </p>
+    </div>
+  </section>
+
+  <section class="lookbook-section" style="background: var(--cream); padding-block: 6rem;">
+    <div class="container">
+      <div class="section-divider">Section · In Their Words</div>
+      <h2 class="section-title">Couples Who Trusted <em>The Day.</em></h2>
+
+      <div class="lookbook" style="margin-top: 4rem;">
+        {testimonials.map((t) => (
+          <figure class="look" style="background: white;">
+            <div class="look-tag">"</div>
+            <blockquote style="font-family: 'Fraunces', serif; font-size: 1.25rem; line-height: 1.5; margin: 1rem 0;">{t.quote}</blockquote>
+            <figcaption style="font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--ink-soft);">
+              <div>{t.author}</div>
+              <div style="margin-top: 0.25rem;">{t.context}</div>
+            </figcaption>
+          </figure>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="lookbook-section">
+    <div class="container">
+      <div style="max-width:720px; margin: 0 auto;">
+        <div class="section-divider">Section · Frequently Asked</div>
+        <h2 class="section-title">Real Questions, <em>Honestly Answered.</em></h2>
+        <div class="article-body" style="margin-top: 3rem;">
+          {faqs.map((f) => (
+            <details style="border-bottom: 1px solid var(--ink-line); padding: 1.5rem 0;">
+              <summary style="cursor: pointer; font-family: 'Fraunces', serif; font-size: 1.2rem; font-weight: 500; list-style: none;">
+                <span style="color: var(--burgundy); margin-right: 0.5rem;">+</span>{f.q}
+              </summary>
+              <p style="margin-top: 1rem; color: var(--ink-soft);">{f.a}</p>
+            </details>
+          ))}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <LeadForm
+    service="weddings"
+    eventType="wedding"
+    title="Tell Us About The Day."
+    subtitle="The date, the venue, the feeling you'd like to remember. We'll come back within twenty-four hours."
+  />
+</PageLayout>
