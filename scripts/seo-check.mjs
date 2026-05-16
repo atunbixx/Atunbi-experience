@@ -37,7 +37,14 @@ if (!fs.existsSync(DIST)) {
 
 const { RULES, scorePage } = await import(url.pathToFileURL(path.join(ROOT, 'src/lib/seo-rules.mjs')).href);
 
-const htmlFiles = await globby(['**/*.html', '!_seo-rules-compiled.*'], { cwd: DIST });
+// Audit only public, indexable pages. Admin/utility routes are noindex
+// internal tools (SEO dashboard, login, uploader) and must not be held to
+// marketing-SEO rules (h1, og tags, target keywords) — auditing them would
+// (and did) block every deployment for no real SEO benefit.
+const htmlFiles = await globby(
+  ['**/*.html', '!_seo-rules-compiled.*', '!admin/**', '!keystatic/**', '!404.html'],
+  { cwd: DIST }
+);
 
 const knownPaths = new Set();
 for (const file of htmlFiles) {
@@ -51,6 +58,11 @@ for (const file of htmlFiles) {
 knownPaths.add('/');
 knownPaths.add('/keystatic');
 knownPaths.add('/api/contact');
+// On-demand (prerender=false) routes never emit static HTML, so links to
+// them must be registered explicitly or the link checker calls them broken.
+knownPaths.add('/admin/login');
+knownPaths.add('/admin/upload');
+knownPaths.add('/admin/seo');
 
 const report = {
   generatedAt: new Date().toISOString(),
