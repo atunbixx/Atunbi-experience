@@ -53,6 +53,13 @@ function client(): S3Client {
     region: 'auto',
     endpoint: `https://${ACCOUNT_ID}.r2.cloudflarestorage.com`,
     credentials: { accessKeyId: ACCESS_KEY_ID, secretAccessKey: SECRET_ACCESS_KEY },
+    // AWS SDK v3 (>=3.729) injects x-amz-checksum-crc32 +
+    // x-amz-sdk-checksum-algorithm into presigned PUT URLs. A plain browser
+    // fetch PUT can't supply a matching checksum header, so R2 rejects it and
+    // the upload fails. R2 doesn't require these — only compute a checksum
+    // when the caller explicitly asks, keeping presigned PUTs clean.
+    requestChecksumCalculation: 'WHEN_REQUIRED',
+    responseChecksumValidation: 'WHEN_REQUIRED',
   });
   return _client;
 }
