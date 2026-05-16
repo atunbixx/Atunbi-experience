@@ -1,14 +1,13 @@
 ---
 import { Image } from 'astro:assets';
-import { cfResized, cfSrcset } from '@lib/cloudflare-images';
 import { SITE } from '@lib/site';
 import '../styles/gallery-justified.css';
 
 interface GalleryItem {
-  src?: ImageMetadata;
-  cloudflareId?: string;
-  cfWidth?: number;
-  cfHeight?: number;
+  src?: ImageMetadata;          // local upload (Keystatic → src/assets)
+  r2Url?: string;               // remote original on R2 (assets.theatunbiexperience.com)
+  width?: number;               // required when r2Url is used (from upload manifest)
+  height?: number;
   alt: string;
   caption?: string;
   description?: string;
@@ -39,24 +38,34 @@ type Resolved = {
   height: number;
   ar: number;
   fullUrl: string;
-  isCf: boolean;
+  isRemote: boolean;
 };
 
-const resolved: Resolved[] = images.map((item) => {
-  if (item.cloudflareId && item.cfWidth && item.cfHeight) {
-    return {
-      item,
-      width: item.cfWidth,
-      height: item.cfHeight,
-      ar: item.cfWidth / item.cfHeight,
-      fullUrl: cfResized(item.cloudflareId, { width: 2400 }),
-      isCf: true,
-    };
-  }
-  const w = item.src?.width ?? 1600;
-  const h = item.src?.height ?? 1067;
-  return { item, width: w, height: h, ar: w / h, fullUrl: item.src?.src ?? '', isCf: false };
-});
+const resolved: Resolved[] = images
+  .map((item): Resolved | null => {
+    if (item.r2Url && item.width && item.height) {
+      return {
+        item,
+        width: item.width,
+        height: item.height,
+        ar: item.width / item.height,
+        fullUrl: item.r2Url,
+        isRemote: true,
+      };
+    }
+    if (item.src) {
+      return {
+        item,
+        width: item.src.width,
+        height: item.src.height,
+        ar: item.src.width / item.src.height,
+        fullUrl: item.src.src,
+        isRemote: false,
+      };
+    }
+    return null;
+  })
+  .filter((r): r is Resolved => r !== null);
 
 // Image SEO — structured data so each photograph is eligible for Google Images.
 const imageJsonLd = {
@@ -77,10 +86,10 @@ const imageJsonLd = {
   })),
 };
 ---
-{images.length > 0 && (
+{resolved.length > 0 && (
   <>
     <div class={`gallery gallery--${layout}`} data-pswp-gallery={groupId}>
-      {resolved.map(({ item, width, height, ar, fullUrl, isCf }) => (
+      {resolved.map(({ item, width, height, ar, fullUrl, isRemote }) => (
         <a
           href={fullUrl}
           data-pswp-width={width}
@@ -95,14 +104,14 @@ const imageJsonLd = {
           data-reveal
         >
           <figure>
-            {isCf ? (
-              <img
-                src={cfResized(item.cloudflareId!, { width: 1200 })}
-                srcset={cfSrcset(item.cloudflareId!)}
-                sizes={sizes}
+            {isRemote ? (
+              <Image
+                src={fullUrl}
+                alt={item.alt}
                 width={width}
                 height={height}
-                alt={item.alt}
+                widths={widths}
+                sizes={sizes}
                 loading="lazy"
                 decoding="async"
               />

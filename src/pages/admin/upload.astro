@@ -1,0 +1,186 @@
+---
+export const prerender = false;
+import PageLayout from '@layouts/PageLayout.astro';
+
+const projectOptions = ['', 'Weddings', 'Galas', 'Portraits', 'Corporate', 'Cultural', 'Brand'];
+---
+<PageLayout title="Upload — Studio" description="Upload photographs to the gallery." noindex={true}>
+  <section class="lookbook-section">
+    <div class="container" style="max-width: 60rem;">
+      <div class="section-divider">Studio · Upload</div>
+      <h1 class="section-title">Add <em>Photographs.</em></h1>
+      <p class="section-subtitle">Drop images below, describe each one (alt text is required — it is what makes the photo findable), then publish. Images go straight to Cloudflare R2 and appear in the gallery.</p>
+
+      <div id="dropzone" style="margin-top:2.5rem; border:1px dashed var(--rule); padding:3rem 1.5rem; text-align:center; cursor:pointer; background:var(--paper);">
+        <p style="font-family:'Fraunces',serif; font-style:italic; font-size:1.2rem; color:var(--ink-soft);">
+          Drag photographs here, or click to choose
+        </p>
+        <p style="font-family:'JetBrains Mono',monospace; font-size:0.65rem; letter-spacing:0.2em; text-transform:uppercase; color:var(--ink-soft); margin-top:0.8rem;">
+          JPEG · PNG · WebP · AVIF
+        </p>
+        <input id="file-input" type="file" accept="image/jpeg,image/png,image/webp,image/avif" multiple hidden />
+      </div>
+
+      <div id="queue" style="margin-top:2rem; display:grid; gap:1.5rem;"></div>
+
+      <div style="margin-top:2rem; display:flex; gap:1rem; align-items:center; flex-wrap:wrap;">
+        <button id="publish" class="btn btn-burgundy" disabled>Publish to gallery</button>
+        <span id="overall" style="font-family:'JetBrains Mono',monospace; font-size:0.7rem; letter-spacing:0.15em; text-transform:uppercase; color:var(--ink-soft);"></span>
+      </div>
+      <p style="margin-top:2rem;"><a href="/gallery" style="color:var(--burgundy);">View the gallery →</a></p>
+    </div>
+  </section>
+
+  <template id="card-tpl">
+    <div class="up-card" style="display:grid; grid-template-columns:160px 1fr; gap:1.5rem; border:1px solid var(--rule); padding:1.2rem; background:var(--paper);">
+      <div>
+        <img class="up-thumb" alt="" style="width:100%; aspect-ratio:1; object-fit:cover; display:block; background:var(--paper-warm);" />
+        <div class="up-state" style="font-family:'JetBrains Mono',monospace; font-size:0.6rem; letter-spacing:0.15em; text-transform:uppercase; color:var(--ink-soft); margin-top:0.5rem; text-align:center;">Ready</div>
+      </div>
+      <div class="form" style="margin:0; max-width:none;">
+        <div>
+          <label>Alt text — describe the photo (required)</label>
+          <input class="up-alt" type="text" maxlength="160" placeholder="e.g. Bride and groom on the steps of a Mayfair townhouse at dusk" />
+        </div>
+        <div class="form-row">
+          <div>
+            <label>Caption (optional)</label>
+            <input class="up-caption" type="text" maxlength="160" placeholder="Shown on hover" />
+          </div>
+          <div>
+            <label>Project</label>
+            <select class="up-project"></select>
+          </div>
+        </div>
+        <div>
+          <label>Tags / keywords (comma-separated)</label>
+          <input class="up-tags" type="text" placeholder="mayfair, golden hour, editorial" />
+        </div>
+        <div>
+          <label>Description (optional — longer, for image SEO)</label>
+          <input class="up-desc" type="text" maxlength="300" placeholder="A sentence of context for search engines" />
+        </div>
+      </div>
+    </div>
+  </template>
+
+  <script is:inline define:vars={{ projectOptions }}>
+    (function () {
+      const dz = document.getElementById('dropzone');
+      const input = document.getElementById('file-input');
+      const queue = document.getElementById('queue');
+      const publishBtn = document.getElementById('publish');
+      const overall = document.getElementById('overall');
+      const tpl = document.getElementById('card-tpl');
+      const items = [];
+
+      dz.addEventListener('click', () => input.click());
+      dz.addEventListener('dragover', (e) => { e.preventDefault(); dz.style.borderColor = 'var(--burgundy)'; });
+      dz.addEventListener('dragleave', () => { dz.style.borderColor = 'var(--rule)'; });
+      dz.addEventListener('drop', (e) => {
+        e.preventDefault(); dz.style.borderColor = 'var(--rule)';
+        addFiles(e.dataTransfer.files);
+      });
+      input.addEventListener('change', () => addFiles(input.files));
+
+      function addFiles(fileList) {
+        [...fileList].forEach((file) => {
+          if (!/^image\/(jpeg|png|webp|avif)$/.test(file.type)) return;
+          const node = tpl.content.firstElementChild.cloneNode(true);
+          const sel = node.querySelector('.up-project');
+          projectOptions.forEach((p) => {
+            const o = document.createElement('option');
+            o.value = p; o.textContent = p || '— none —';
+            sel.appendChild(o);
+          });
+          const thumb = node.querySelector('.up-thumb');
+          const url = URL.createObjectURL(file);
+          thumb.src = url;
+          const rec = { file, node, width: 0, height: 0, key: null, state: 'ready' };
+          const probe = new Image();
+          probe.onload = () => { rec.width = probe.naturalWidth; rec.height = probe.naturalHeight; };
+          probe.src = url;
+          items.push(rec);
+          queue.appendChild(node);
+        });
+        publishBtn.disabled = items.length === 0;
+        overall.textContent = items.length + ' image(s) queued';
+      }
+
+      async function uploadOne(rec) {
+        const setState = (t) => { rec.node.querySelector('.up-state').textContent = t; };
+        try {
+          setState('Signing…');
+          const pres = await fetch('/api/upload/presign', {
+            method: 'POST',
+            headers: { 'content-type': 'application/json' },
+            body: JSON.stringify({ filename: rec.file.name, contentType: rec.file.type, folder: 'gallery' }),
+          });
+          const pj = await pres.json();
+          if (!pres.ok) throw new Error(pj.error || 'presign failed');
+          rec.key = pj.key;
+          setState('Uploading…');
+          const put = await fetch(pj.uploadUrl, {
+            method: 'PUT',
+            headers: { 'content-type': rec.file.type },
+            body: rec.file,
+          });
+          if (!put.ok) throw new Error('R2 upload failed (' + put.status + ')');
+          setState('Uploaded ✓');
+          rec.state = 'uploaded';
+          return true;
+        } catch (err) {
+          setState('Error: ' + err.message);
+          rec.state = 'error';
+          return false;
+        }
+      }
+
+      publishBtn.addEventListener('click', async () => {
+        // validate alt text
+        for (const rec of items) {
+          const alt = rec.node.querySelector('.up-alt').value.trim();
+          if (alt.length < 5) {
+            rec.node.querySelector('.up-alt').focus();
+            overall.textContent = 'Every image needs alt text (min 5 chars).';
+            return;
+          }
+        }
+        publishBtn.disabled = true;
+        overall.textContent = 'Uploading…';
+        const pending = items.filter((r) => r.state !== 'uploaded');
+        for (const rec of pending) await uploadOne(rec);
+
+        const ok = items.filter((r) => r.state === 'uploaded');
+        if (ok.length === 0) { overall.textContent = 'Nothing uploaded — see errors above.'; publishBtn.disabled = false; return; }
+
+        overall.textContent = 'Saving gallery…';
+        const payload = {
+          items: ok.map((rec) => ({
+            key: rec.key,
+            width: rec.width,
+            height: rec.height,
+            alt: rec.node.querySelector('.up-alt').value.trim(),
+            caption: rec.node.querySelector('.up-caption').value.trim(),
+            description: rec.node.querySelector('.up-desc').value.trim(),
+            tags: rec.node.querySelector('.up-tags').value.split(',').map((t) => t.trim()).filter(Boolean),
+            project: rec.node.querySelector('.up-project').value,
+          })),
+        };
+        try {
+          const res = await fetch('/api/upload/commit', {
+            method: 'POST',
+            headers: { 'content-type': 'application/json' },
+            body: JSON.stringify(payload),
+          });
+          const j = await res.json();
+          if (!res.ok) throw new Error(j.error || 'commit failed');
+          overall.textContent = `Published ${j.count} image(s). Gallery total: ${j.total}. Rebuilding the site…`;
+        } catch (err) {
+          overall.textContent = 'Publish error: ' + err.message;
+          publishBtn.disabled = false;
+        }
+      });
+    })();
+  </script>
+</PageLayout>

@@ -17,6 +17,11 @@ export default defineConfig({
     imageService: true,
     webAnalytics: { enabled: true },
   }),
+  image: {
+    // R2 custom domain — lets Astro/Vercel optimise the remote originals
+    // (resize + AVIF/WebP + edge cache) without Cloudflare transformations.
+    domains: ['assets.theatunbiexperience.com'],
+  },
   integrations: [
     react(),
     keystatic(),

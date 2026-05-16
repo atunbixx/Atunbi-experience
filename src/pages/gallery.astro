@@ -3,17 +3,29 @@ import PageLayout from '@layouts/PageLayout.astro';
 import Gallery from '@components/Gallery.astro';
 import Lightbox from '@components/Lightbox.astro';
 import { getCollection } from 'astro:content';
+import { readManifest, publicUrl } from '@lib/r2';
 
+// Primary source: photographs uploaded via /admin/upload (R2 manifest).
+const manifest = await readManifest();
+const r2Images = manifest.items.map((g) => ({
+  r2Url: publicUrl(g.key),
+  width: g.width,
+  height: g.height,
+  alt: g.alt,
+  caption: g.caption,
+  description: g.description,
+  tags: g.tags,
+  project: g.project,
+}));
+
+// Fallback while the R2 archive is still empty: the local project galleries
+// so the page is never blank before the first upload.
 const projects = (await getCollection('projects', ({ data }) => !data.draft)).sort(
   (a, b) => a.data.order - b.data.order
 );
-
-const allImages = projects.flatMap((project) =>
+const projectImages = projects.flatMap((project) =>
   project.data.gallery.map((g) => ({
     src: g.src,
-    cloudflareId: g.cloudflareId,
-    cfWidth: g.cfWidth,
-    cfHeight: g.cfHeight,
     alt: g.alt,
     caption: g.caption,
     description: g.description,
@@ -22,6 +34,8 @@ const allImages = projects.flatMap((project) =>
     projectHref: `/portfolio/${project.slug}`,
   }))
 );
+
+const allImages = r2Images.length > 0 ? r2Images : projectImages;
 
 const breadcrumbs = [
   { name: 'Home', url: '/' },
