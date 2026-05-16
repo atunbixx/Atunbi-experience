@@ -234,15 +234,36 @@ export default config({
         gallery: fields.array(
           fields.object({
             src: fields.image({
-              label: 'Image',
+              label: 'Image (leave empty if using Cloudflare below)',
               directory: 'src/assets/uploads/projects',
               publicPath: '/uploads/projects/',
             }),
+            cloudflareId: fields.text({
+              label: 'Cloudflare Image ID (optional — overrides the upload above)',
+              description: 'The image ID from Cloudflare Images. Requires the two size fields below.',
+            }),
+            cfWidth: fields.integer({
+              label: 'Cloudflare width (px)',
+              validation: { isRequired: false },
+            }),
+            cfHeight: fields.integer({
+              label: 'Cloudflare height (px)',
+              validation: { isRequired: false },
+            }),
             alt: fields.text({
-              label: 'Alt text (REQUIRED)',
+              label: 'Alt text (REQUIRED — describes the photo for SEO + screen readers)',
               validation: { length: { min: 5, max: 160 } },
             }),
-            caption: fields.text({ label: 'Caption' }),
+            caption: fields.text({ label: 'Caption (shown on hover)' }),
+            description: fields.text({
+              label: 'Description (longer — feeds image SEO / structured data)',
+              multiline: true,
+              validation: { length: { min: 0, max: 300 } },
+            }),
+            tags: fields.array(fields.text({ label: 'Tag' }), {
+              label: 'Tags / keywords (image SEO + future filtering)',
+              itemLabel: (p) => p.value || 'tag',
+            }),
           }),
           { label: 'Gallery image', itemLabel: (p) => p.fields.alt.value || 'Gallery image' }
         ),
@@ -252,10 +273,10 @@ export default config({
         layoutStyle: fields.select({
           label: 'Gallery layout',
           options: [
+            { label: 'Justified rows (even rows, symmetric — recommended)', value: 'justified' },
             { label: 'Masonry (Pinterest-style staggered columns)', value: 'masonry' },
-            { label: 'Justified rows (uniform-height rows)', value: 'justified' },
           ],
-          defaultValue: 'masonry',
+          defaultValue: 'justified',
         }),
         heroOverlay: fields.select({
           label: 'Hero scrim colour (for title legibility)',

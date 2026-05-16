@@ -1,10 +1,18 @@
 ---
 import { Image } from 'astro:assets';
+import { cfResized, cfSrcset } from '@lib/cloudflare-images';
+import { SITE } from '@lib/site';
+import '../styles/gallery-justified.css';
 
 interface GalleryItem {
-  src: ImageMetadata;
+  src?: ImageMetadata;
+  cloudflareId?: string;
+  cfWidth?: number;
+  cfHeight?: number;
   alt: string;
   caption?: string;
+  description?: string;
+  tags?: string[];
   project?: string;
   projectHref?: string;
 }
@@ -19,40 +27,101 @@ export interface Props {
 
 const {
   images,
-  layout = 'masonry',
+  layout = 'justified',
   groupId,
   widths = [480, 800, 1200, 1600],
   sizes = '(max-width: 600px) 100vw, (max-width: 1000px) 50vw, 33vw',
 } = Astro.props;
+
+type Resolved = {
+  item: GalleryItem;
+  width: number;
+  height: number;
+  ar: number;
+  fullUrl: string;
+  isCf: boolean;
+};
+
+const resolved: Resolved[] = images.map((item) => {
+  if (item.cloudflareId && item.cfWidth && item.cfHeight) {
+    return {
+      item,
+      width: item.cfWidth,
+      height: item.cfHeight,
+      ar: item.cfWidth / item.cfHeight,
+      fullUrl: cfResized(item.cloudflareId, { width: 2400 }),
+      isCf: true,
+    };
+  }
+  const w = item.src?.width ?? 1600;
+  const h = item.src?.height ?? 1067;
+  return { item, width: w, height: h, ar: w / h, fullUrl: item.src?.src ?? '', isCf: false };
+});
+
+// Image SEO — structured data so each photograph is eligible for Google Images.
+const imageJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'ImageGallery',
+  name: `${SITE.name} — photography`,
+  image: resolved.map((r) => ({
+    '@type': 'ImageObject',
+    contentUrl: r.fullUrl.startsWith('http') ? r.fullUrl : `${SITE.url}${r.fullUrl}`,
+    name: r.item.alt,
+    caption: r.item.caption ?? r.item.alt,
+    ...(r.item.description ? { description: r.item.description } : {}),
+    ...(r.item.tags && r.item.tags.length ? { keywords: r.item.tags.join(', ') } : {}),
+    width: r.width,
+    height: r.height,
+    creator: { '@type': 'Person', name: 'Atunbi' },
+    copyrightHolder: { '@type': 'Organization', name: SITE.name },
+  })),
+};
 ---
 {images.length > 0 && (
-  <div class={`gallery gallery--${layout}`} data-pswp-gallery={groupId}>
-    {images.map((item) => {
-      const aspectRatio = item.src.width / item.src.height;
-      return (
+  <>
+    <div class={`gallery gallery--${layout}`} data-pswp-gallery={groupId}>
+      {resolved.map(({ item, width, height, ar, fullUrl, isCf }) => (
         <a
-          href={item.src.src}
-          data-pswp-width={item.src.width}
-          data-pswp-height={item.src.height}
+          href={fullUrl}
+          data-pswp-width={width}
+          data-pswp-height={height}
           data-caption={item.caption ?? ''}
           data-project={item.project ?? ''}
           data-project-href={item.projectHref ?? ''}
+          data-tags={(item.tags ?? []).join(',')}
           aria-label={item.caption ? `${item.alt} — ${item.caption}` : item.alt}
-          style={`--ar:${aspectRatio.toFixed(3)}`}
+          title={item.description ?? item.caption ?? item.alt}
+          style={`--ar:${ar.toFixed(4)}`}
           data-reveal
         >
-          <Image
-            src={item.src}
-            alt={item.alt}
-            widths={widths}
-            sizes={sizes}
-            loading="lazy"
-            decoding="async"
-            formats={['avif', 'webp']}
-          />
-          {item.caption && <span class="caption-overlay">{item.caption}</span>}
+          <figure>
+            {isCf ? (
+              <img
+                src={cfResized(item.cloudflareId!, { width: 1200 })}
+                srcset={cfSrcset(item.cloudflareId!)}
+                sizes={sizes}
+                width={width}
+                height={height}
+                alt={item.alt}
+                loading="lazy"
+                decoding="async"
+              />
+            ) : (
+              <Image
+                src={item.src!}
+                alt={item.alt}
+                widths={widths}
+                sizes={sizes}
+                loading="lazy"
+                decoding="async"
+                formats={['avif', 'webp']}
+              />
+            )}
+            {item.caption && <figcaption class="caption-overlay">{item.caption}</figcaption>}
+          </figure>
         </a>
-      );
-    })}
-  </div>
+      ))}
+    </div>
+    <script type="application/ld+json" set:html={JSON.stringify(imageJsonLd)} is:inline />
+  </>
 )}
