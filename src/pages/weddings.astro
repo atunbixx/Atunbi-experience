@@ -1,0 +1,123 @@
+---
+import PageLayout from '@layouts/PageLayout.astro';
+import PlateCard from '@components/PlateCard.astro';
+import LeadForm from '@components/LeadForm.astro';
+import WhatsAppCTA from '@components/WhatsAppCTA.astro';
+import { Image } from 'astro:assets';
+import { SITE, SERVICES } from '@lib/site';
+import '../styles/lead-gen.css';
+
+import hero from '../assets/uploads/projects/mayfair-townhouse-wedding/hero.jpg';
+import shot01 from '../assets/uploads/projects/mayfair-townhouse-wedding/01-ceremony.jpg';
+import shot02 from '../assets/uploads/projects/mayfair-townhouse-wedding/02-couple.jpg';
+import shot03 from '../assets/uploads/projects/mayfair-townhouse-wedding/03-rings.jpg';
+import shot04 from '../assets/uploads/projects/mayfair-townhouse-wedding/04-reception.jpg';
+import platePortrait from '../assets/uploads/plates/01-wedding.jpg';
+
+const service = SERVICES.find((s) => s.slug === 'weddings')!;
+const breadcrumbs = [
+  { name: 'Home', url: '/' },
+  { name: 'Weddings', url: '/weddings' },
+];
+
+const plates = [
+  { number: 'Plate I', title: 'The Ceremony', category: 'Mayfair · 2025', image: shot01, alt: 'Wedding ceremony, Mayfair townhouse' },
+  { number: 'Plate II', title: 'The Couple', category: 'Golden Hour', image: shot02, alt: 'Couple portrait at golden hour' },
+  { number: 'Plate III', title: 'The Detail', category: 'Rings & Vows', image: shot03, alt: 'Wedding rings detail' },
+  { number: 'Plate IV', title: 'The Reception', category: 'After Dark', image: shot04, alt: 'Reception dance floor' },
+  { number: 'Plate V', title: 'The Portrait', category: 'Editorial', image: platePortrait, alt: 'Editorial bridal portrait' },
+  { number: 'Plate VI', title: 'The First Look', category: 'Quiet Moment', image: hero, alt: 'First look, private moment' },
+];
+
+const faqs = [
+  { q: 'What is the difference between £1,200 and £1,800?', a: '£1,200 buys six hours of coverage — typically ceremony, portraits and early reception. £1,800 buys the full day, from getting-ready candids through to first dance: three hundred more frames, longer access, an album credit. Most couples land here.' },
+  { q: 'What if it rains?', a: 'We have shot in August heat and December downpours; bad weather often produces the most striking frames. We scout indoor alternates during the venue visit, bring umbrellas, and never let the day fall apart over the forecast.' },
+  { q: 'Do you have insurance?', a: '£5M public liability and equipment cover. Certificates available on request and sent directly to your venue.' },
+  { q: 'How quickly do you reply?', a: 'Within twenty-four hours, every time. WhatsApp is fastest if you would like a quicker word.' },
+  { q: 'Do we receive raw files?', a: 'No — and this is industry-standard. You receive hand-finished, colour-graded high-resolution files. The raws are working files, not finished work.' },
+  { q: 'Can the balance be paid in instalments?', a: 'Yes. Twenty-five percent retains the date; the balance can be split into three payments through the year preceding. No interest, no fees.' },
+];
+
+const quotes = [
+  { quote: 'Quietly there all day. The gallery felt like the wedding, not a recreation of it.', who: 'Sophie & James', context: 'Mayfair Townhouse · September 2025' },
+  { quote: 'Calm, considered, in the right place at every moment we cared about. Mum cried at the album.', who: 'Aisha & Tom', context: 'Asia House · June 2025' },
+  { quote: 'We trusted the whole day to them and never thought about it again until the photos arrived.', who: 'Lily & Idris', context: 'Babington House · May 2025' },
+];
+---
+<PageLayout
+  title="Editorial London Wedding Photography"
+  description="Editorial wedding photography for London. Six-hour coverage from £1,200; full-day coverage from £1,800. Discreet on the day, hand-finished after."
+  keywords={['London wedding photographer', 'editorial wedding photography London', 'Mayfair wedding photographer', 'luxury wedding photographer London']}
+  jsonLdType="page"
+  breadcrumbs={breadcrumbs}
+>
+  <section class="cover">
+    <div class="cover-grid">
+      <div class="cover-text">
+        <div class="plate">{service.eyebrow}</div>
+        <h1>A Wedding,<br />Quietly <em>Made.</em></h1>
+        <p class="deck">Editorial wedding photography for London. Discreet on the day, hand-finished after. Six hours from £1,200; full-day from £1,800.</p>
+        <div class="cover-byline">By Atunbi · London Studio · Est. {SITE.established}</div>
+        <div class="cover-ctas lp-hero-ctas">
+          <a href="#enquire" class="btn btn-burgundy">Begin The Conversation</a>
+          <WhatsAppCTA prefill={service.waPrefill} source="weddings-hero" variant="wa" label="WhatsApp" />
+        </div>
+        <p class="lp-hero-aside">Prefer to browse first? <a href="/lookbook">See the Lookbook →</a></p>
+      </div>
+      <figure class="cover-image">
+        <Image src={hero} alt="Mayfair townhouse wedding — first look" widths={[600, 1000, 1600]} sizes="(min-width: 900px) 58vw, 100vw" loading="eager" />
+        <figcaption class="cover-image-caption">Plate I · Mayfair · 2025</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section class="plates-section lp-band lp-band--cream">
+    <div class="container">
+      <div class="section-divider">Section · Plates From Weddings</div>
+      <h2 class="section-title">A Wedding, in <em>Six Frames.</em></h2>
+      <div class="plates-grid" style="margin-top: 3.5rem;">
+        {plates.map((p) => (
+          <PlateCard number={p.number} title={p.title} category={p.category} href="/portfolio/mayfair-townhouse-wedding" image={p.image} alt={p.alt} />
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="lp-band lp-band--ink">
+    <div class="container">
+      <div class="section-divider">Section · In Their Words</div>
+      <h2 class="section-title">Couples Who Trusted <em>The Day.</em></h2>
+      <div class="lp-quotes">
+        {quotes.map((t) => (
+          <figure class="lp-quote">
+            <span class="lp-quote-mark">&#8220;</span>
+            <blockquote>{t.quote}</blockquote>
+            <figcaption><span class="who">{t.who}</span><br />{t.context}</figcaption>
+          </figure>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="lp-band lp-band--paper">
+    <div class="container">
+      <div class="section-divider">Section · Frequently Asked</div>
+      <h2 class="section-title">Real Questions, <em>Honestly Answered.</em></h2>
+      <div class="lp-faq">
+        {faqs.map((f) => (
+          <details>
+            <summary>{f.q}<span class="mark">+</span></summary>
+            <div class="lp-faq-answer">{f.a}</div>
+          </details>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <LeadForm
+    service="weddings"
+    eventType="wedding"
+    title="Tell Us About The Day."
+    subtitle="The date, the venue, the feeling you'd like to remember. We'll come back within twenty-four hours."
+  />
+</PageLayout>

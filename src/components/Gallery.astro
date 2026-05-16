@@ -1,10 +1,17 @@
 ---
 import { Image } from 'astro:assets';
+import { SITE } from '@lib/site';
+import '../styles/gallery-justified.css';
 
 interface GalleryItem {
-  src: ImageMetadata;
+  src?: ImageMetadata;          // local upload (Keystatic → src/assets)
+  r2Url?: string;               // remote original on R2 (assets.theatunbiexperience.com)
+  width?: number;               // required when r2Url is used (from upload manifest)
+  height?: number;
   alt: string;
   caption?: string;
+  description?: string;
+  tags?: string[];
   project?: string;
   projectHref?: string;
 }
@@ -19,40 +26,111 @@ export interface Props {
 
 const {
   images,
-  layout = 'masonry',
+  layout = 'justified',
   groupId,
   widths = [480, 800, 1200, 1600],
   sizes = '(max-width: 600px) 100vw, (max-width: 1000px) 50vw, 33vw',
 } = Astro.props;
+
+type Resolved = {
+  item: GalleryItem;
+  width: number;
+  height: number;
+  ar: number;
+  fullUrl: string;
+  isRemote: boolean;
+};
+
+const resolved: Resolved[] = images
+  .map((item): Resolved | null => {
+    if (item.r2Url && item.width && item.height) {
+      return {
+        item,
+        width: item.width,
+        height: item.height,
+        ar: item.width / item.height,
+        fullUrl: item.r2Url,
+        isRemote: true,
+      };
+    }
+    if (item.src) {
+      return {
+        item,
+        width: item.src.width,
+        height: item.src.height,
+        ar: item.src.width / item.src.height,
+        fullUrl: item.src.src,
+        isRemote: false,
+      };
+    }
+    return null;
+  })
+  .filter((r): r is Resolved => r !== null);
+
+// Image SEO — structured data so each photograph is eligible for Google Images.
+const imageJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'ImageGallery',
+  name: `${SITE.name} — photography`,
+  image: resolved.map((r) => ({
+    '@type': 'ImageObject',
+    contentUrl: r.fullUrl.startsWith('http') ? r.fullUrl : `${SITE.url}${r.fullUrl}`,
+    name: r.item.alt,
+    caption: r.item.caption ?? r.item.alt,
+    ...(r.item.description ? { description: r.item.description } : {}),
+    ...(r.item.tags && r.item.tags.length ? { keywords: r.item.tags.join(', ') } : {}),
+    width: r.width,
+    height: r.height,
+    creator: { '@type': 'Person', name: 'Atunbi' },
+    copyrightHolder: { '@type': 'Organization', name: SITE.name },
+  })),
+};
 ---
-{images.length > 0 && (
-  <div class={`gallery gallery--${layout}`} data-pswp-gallery={groupId}>
-    {images.map((item) => {
-      const aspectRatio = item.src.width / item.src.height;
-      return (
+{resolved.length > 0 && (
+  <>
+    <div class={`gallery gallery--${layout}`} data-pswp-gallery={groupId}>
+      {resolved.map(({ item, width, height, ar, fullUrl, isRemote }) => (
         <a
-          href={item.src.src}
-          data-pswp-width={item.src.width}
-          data-pswp-height={item.src.height}
+          href={fullUrl}
+          data-pswp-width={width}
+          data-pswp-height={height}
           data-caption={item.caption ?? ''}
           data-project={item.project ?? ''}
           data-project-href={item.projectHref ?? ''}
+          data-tags={(item.tags ?? []).join(',')}
           aria-label={item.caption ? `${item.alt} — ${item.caption}` : item.alt}
-          style={`--ar:${aspectRatio.toFixed(3)}`}
+          title={item.description ?? item.caption ?? item.alt}
+          style={`--ar:${ar.toFixed(4)}`}
           data-reveal
         >
-          <Image
-            src={item.src}
-            alt={item.alt}
-            widths={widths}
-            sizes={sizes}
-            loading="lazy"
-            decoding="async"
-            formats={['avif', 'webp']}
-          />
-          {item.caption && <span class="caption-overlay">{item.caption}</span>}
+          <figure>
+            {isRemote ? (
+              <Image
+                src={fullUrl}
+                alt={item.alt}
+                width={width}
+                height={height}
+                widths={widths}
+                sizes={sizes}
+                loading="lazy"
+                decoding="async"
+              />
+            ) : (
+              <Image
+                src={item.src!}
+                alt={item.alt}
+                widths={widths}
+                sizes={sizes}
+                loading="lazy"
+                decoding="async"
+                formats={['avif', 'webp']}
+              />
+            )}
+            {item.caption && <figcaption class="caption-overlay">{item.caption}</figcaption>}
+          </figure>
         </a>
-      );
-    })}
-  </div>
+      ))}
+    </div>
+    <script type="application/ld+json" set:html={JSON.stringify(imageJsonLd)} is:inline />
+  </>
 )}

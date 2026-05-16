@@ -1,0 +1,111 @@
+/*
+ * Cloudflare R2 client + gallery manifest.
+ *
+ * R2 is S3-compatible, so we use the AWS S3 SDK pointed at the R2 endpoint.
+ * Originals are stored in R2; Vercel optimises them on delivery (see Gallery).
+ *
+ * The gallery's source of truth is a single JSON object in the bucket:
+ *   gallery/manifest.json  →  { items: GalleryEntry[] }
+ * No database, no git writes — one system, survives every deploy.
+ *
+ * Secrets (NEVER client-side, set in Vercel env):
+ *   R2_ACCOUNT_ID, R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY, R2_BUCKET
+ * Public:
+ *   PUBLIC_R2_BASE  e.g. https://assets.theatunbiexperience.com
+ */
+
+import { S3Client, PutObjectCommand, GetObjectCommand } from '@aws-sdk/client-s3';
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
+
+const ACCOUNT_ID = import.meta.env.R2_ACCOUNT_ID ?? '';
+const ACCESS_KEY_ID = import.meta.env.R2_ACCESS_KEY_ID ?? '';
+const SECRET_ACCESS_KEY = import.meta.env.R2_SECRET_ACCESS_KEY ?? '';
+const BUCKET = import.meta.env.R2_BUCKET ?? 'theatunbiexperience-assets';
+
+export const R2_PUBLIC_BASE =
+  import.meta.env.PUBLIC_R2_BASE ?? 'https://assets.theatunbiexperience.com';
+
+const MANIFEST_KEY = 'gallery/manifest.json';
+
+export type GalleryEntry = {
+  key: string; // object path in the bucket, e.g. weddings/mayfair-01.jpg
+  alt: string;
+  caption?: string;
+  description?: string;
+  tags: string[];
+  project?: string;
+  width?: number;
+  height?: number;
+  order: number;
+  uploadedAt: string;
+};
+
+export type Manifest = { items: GalleryEntry[] };
+
+export function r2Configured(): boolean {
+  return Boolean(ACCOUNT_ID && ACCESS_KEY_ID && SECRET_ACCESS_KEY && BUCKET);
+}
+
+let _client: S3Client | null = null;
+function client(): S3Client {
+  if (_client) return _client;
+  _client = new S3Client({
+    region: 'auto',
+    endpoint: `https://${ACCOUNT_ID}.r2.cloudflarestorage.com`,
+    credentials: { accessKeyId: ACCESS_KEY_ID, secretAccessKey: SECRET_ACCESS_KEY },
+  });
+  return _client;
+}
+
+export function publicUrl(key: string): string {
+  return `${R2_PUBLIC_BASE.replace(/\/$/, '')}/${key.replace(/^\//, '')}`;
+}
+
+/** Short-lived URL the browser PUTs the file straight to (bypasses the function body limit). */
+export async function presignUpload(key: string, contentType: string, expiresIn = 600): Promise<string> {
+  const cmd = new PutObjectCommand({ Bucket: BUCKET, Key: key, ContentType: contentType });
+  return getSignedUrl(client(), cmd, { expiresIn });
+}
+
+/** Read the manifest. Tries the public URL first (fast, cached), falls back to S3 GET. */
+export async function readManifest(): Promise<Manifest> {
+  try {
+    const res = await fetch(`${publicUrl(MANIFEST_KEY)}?t=${Date.now()}`, {
+      headers: { 'cache-control': 'no-cache' },
+    });
+    if (res.ok) return (await res.json()) as Manifest;
+  } catch {
+    /* fall through */
+  }
+  if (!r2Configured()) return { items: [] };
+  try {
+    const out = await client().send(new GetObjectCommand({ Bucket: BUCKET, Key: MANIFEST_KEY }));
+    const text = await out.Body?.transformToString();
+    return text ? (JSON.parse(text) as Manifest) : { items: [] };
+  } catch {
+    return { items: [] };
+  }
+}
+
+export async function writeManifest(manifest: Manifest): Promise<void> {
+  await client().send(
+    new PutObjectCommand({
+      Bucket: BUCKET,
+      Key: MANIFEST_KEY,
+      Body: JSON.stringify(manifest, null, 2),
+      ContentType: 'application/json',
+      CacheControl: 'public, max-age=30',
+    })
+  );
+}
+
+/** Optional: ping a Vercel deploy hook so a new upload goes live without a manual redeploy. */
+export async function triggerRebuild(): Promise<void> {
+  const hook = import.meta.env.VERCEL_DEPLOY_HOOK_URL;
+  if (!hook) return;
+  try {
+    await fetch(hook, { method: 'POST' });
+  } catch {
+    /* non-fatal */
+  }
+}

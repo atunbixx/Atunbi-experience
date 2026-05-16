@@ -1,0 +1,161 @@
+/*
+ * Lead-gen landing page layer.
+ * Imported only by /weddings, /events, /portrait-sittings.
+ * Builds on the existing editorial system (.cover, .plates-grid, .plate-card,
+ * .section-*, .form). Adds only what those pages need: WhatsApp button,
+ * editorial pull-quotes, a refined FAQ, and section-band pacing.
+ */
+
+/* --- WhatsApp CTA --- */
+.btn-wa {
+  --wa: #1f7a4d;
+  background: transparent;
+  color: var(--wa);
+  border-color: var(--wa);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+.btn-wa svg { width: 16px; height: 16px; }
+.btn-wa:hover {
+  background: var(--wa);
+  color: var(--paper);
+}
+
+/* --- Section bands: alternating depth, like the magazine's spreads --- */
+.lp-band { border-bottom: 1px solid var(--ink); }
+.lp-band--cream { background: var(--cream); }
+.lp-band--paper { background: var(--paper); }
+.lp-band--warm  { background: var(--paper-warm); }
+.lp-band--ink   { background: var(--ink); }
+.lp-band .container { padding-block: clamp(4rem, 9vw, 8rem); }
+
+/* --- Editorial pull-quotes (replaces the card-style testimonials) --- */
+.lp-quotes {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 3.5rem;
+  margin-top: 4rem;
+}
+@media (max-width: 900px) {
+  .lp-quotes { grid-template-columns: 1fr; gap: 3rem; max-width: 36rem; margin-inline: auto; }
+}
+.lp-quote {
+  border-top: 1px solid var(--rule);
+  padding-top: 1.8rem;
+}
+.lp-quote-mark {
+  font-family: 'Fraunces', serif;
+  font-size: 2.4rem;
+  line-height: 1;
+  color: var(--burgundy);
+  font-style: italic;
+}
+.lp-quote blockquote {
+  font-family: 'Fraunces', serif;
+  font-weight: 300;
+  font-style: italic;
+  font-size: 1.32rem;
+  line-height: 1.5;
+  color: var(--ink);
+  margin: 1rem 0 1.8rem;
+}
+.lp-quote figcaption {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.66rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  line-height: 1.7;
+}
+.lp-quote figcaption .who { color: var(--burgundy); }
+
+/* On the dark band, invert ink → paper */
+.lp-band--ink .section-divider,
+.lp-band--ink .section-title { color: var(--paper); }
+.lp-band--ink .section-title em { color: var(--gold); }
+.lp-band--ink .lp-quote { border-top-color: rgba(245, 239, 230, 0.22); }
+.lp-band--ink .lp-quote blockquote { color: var(--paper); }
+.lp-band--ink .lp-quote-mark { color: var(--gold); }
+.lp-band--ink .lp-quote figcaption { color: rgba(245, 239, 230, 0.62); }
+.lp-band--ink .lp-quote figcaption .who { color: var(--gold); }
+
+/* --- Refined FAQ --- */
+.lp-faq {
+  max-width: 46rem;
+  margin: 3.5rem auto 0;
+}
+.lp-faq details {
+  border-bottom: 1px solid var(--rule);
+}
+.lp-faq details:first-of-type {
+  border-top: 1px solid var(--rule);
+}
+.lp-faq summary {
+  list-style: none;
+  cursor: pointer;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 2rem;
+  padding: 1.7rem 0;
+  font-family: 'Fraunces', serif;
+  font-size: 1.18rem;
+  font-weight: 400;
+  color: var(--ink);
+  transition: color 0.25s ease;
+}
+.lp-faq summary:hover { color: var(--burgundy); }
+.lp-faq summary::-webkit-details-marker { display: none; }
+.lp-faq summary .mark {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.9rem;
+  color: var(--burgundy);
+  flex-shrink: 0;
+  transition: transform 0.3s ease;
+}
+.lp-faq details[open] summary .mark { transform: rotate(45deg); }
+.lp-faq details[open] summary { color: var(--burgundy); }
+.lp-faq-answer {
+  padding: 0 0 1.9rem;
+  max-width: 60ch;
+  font-family: 'Fraunces', serif;
+  font-size: 1.02rem;
+  line-height: 1.75;
+  color: var(--ink-soft);
+}
+
+/* --- Hero CTA spacing --- */
+.lp-hero-ctas { margin-top: 2.2rem; }
+.lp-hero-aside {
+  margin-top: 1.4rem;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.68rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+.lp-hero-aside a { color: var(--burgundy); text-decoration: none; }
+.lp-hero-aside a:hover { text-decoration: underline; }
+
+/* --- Plate gallery caption (matches the magazine's plate captions) --- */
+.lp-plate-caption {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.62rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  margin-top: -0.4rem;
+}
+
+/* --- Closing line above the form --- */
+.lp-enquire-intro {
+  max-width: 38rem;
+  margin: 0 auto 3rem;
+  text-align: center;
+  font-family: 'Fraunces', serif;
+  font-style: italic;
+  font-size: 1.15rem;
+  line-height: 1.6;
+  color: var(--ink-soft);
+}

@@ -37,11 +37,21 @@ const projects = defineCollection({
       heroAlt: z.string().min(5).max(160).optional(),
       gallery: z
         .array(
-          z.object({
-            src: image(),
-            alt: z.string().min(5).max(160),
-            caption: z.string().optional(),
-          })
+          z
+            .object({
+              src: image().optional(),
+              cloudflareId: z.string().optional(),
+              cfWidth: z.number().int().positive().optional(),
+              cfHeight: z.number().int().positive().optional(),
+              alt: z.string().min(5).max(160),
+              caption: z.string().optional(),
+              description: z.string().max(300).optional(),
+              tags: z.array(z.string()).default([]),
+            })
+            .refine((g) => g.src || (g.cloudflareId && g.cfWidth && g.cfHeight), {
+              message:
+                'Each gallery image needs either an uploaded src, or a Cloudflare ID with cfWidth and cfHeight.',
+            })
         )
         .default([]),
       category: z.enum([
@@ -58,7 +68,7 @@ const projects = defineCollection({
       featured: z.boolean().default(false),
       order: z.number().default(0),
       draft: z.boolean().default(false),
-      layoutStyle: z.enum(['masonry', 'justified']).default('masonry'),
+      layoutStyle: z.enum(['masonry', 'justified']).default('justified'),
       heroOverlay: z.enum(['dark', 'light']).default('dark'),
     }),
 });

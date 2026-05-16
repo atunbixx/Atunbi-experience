@@ -29,7 +29,7 @@ interface Props {
 const { project, prev, next } = Astro.props;
 const { Content } = await project.render();
 const url = `/portfolio/${project.slug}`;
-const layout = (project.data.layoutStyle ?? 'masonry') as 'masonry' | 'justified';
+const layout = (project.data.layoutStyle ?? 'justified') as 'masonry' | 'justified';
 
 const breadcrumbs = [
   { name: 'Home', url: '/' },
@@ -43,8 +43,13 @@ const titleStart = titleParts.length > 1 ? titleParts.slice(0, -1).join(' ') : '
 
 const galleryImages = project.data.gallery.map((g) => ({
   src: g.src,
+  cloudflareId: g.cloudflareId,
+  cfWidth: g.cfWidth,
+  cfHeight: g.cfHeight,
   alt: g.alt,
   caption: g.caption,
+  description: g.description,
+  tags: g.tags,
 }));
 ---
 <PageLayout

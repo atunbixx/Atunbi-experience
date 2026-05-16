@@ -1,0 +1,145 @@
+---
+import type { ServiceSlug } from '@lib/site';
+
+interface Props {
+  service: ServiceSlug;
+  eventType: 'wedding' | 'gala' | 'portrait' | 'brand' | 'other';
+  title?: string;
+  subtitle?: string;
+}
+
+const {
+  service,
+  eventType,
+  title = 'Begin The Conversation.',
+  subtitle = 'Tell us the date, the venue, and what you\'d like to remember. We\'ll come back with a quiet, considered proposal within twenty-four hours.',
+} = Astro.props;
+
+const turnstileKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY ?? '';
+const formId = `lead-form-${service}`;
+const statusId = `lead-status-${service}`;
+---
+<section id="enquire" class="lp-band lp-band--warm">
+  <div class="container">
+    <div class="section-divider">Section · Enquire</div>
+    <h2 class="section-title">{title.split(' ').slice(0, -1).join(' ')} <em>{title.split(' ').slice(-1)[0]?.replace(/\.$/, '')}.</em></h2>
+    <p class="lp-enquire-intro">{subtitle}</p>
+
+    <form class="form" id={formId} method="POST" action="/api/contact" novalidate>
+      <input type="hidden" name="eventType" value={eventType} />
+      <input type="hidden" name="service" value={service} />
+      <input type="hidden" name="utm_source" value="" data-utm="utm_source" />
+      <input type="hidden" name="utm_medium" value="" data-utm="utm_medium" />
+      <input type="hidden" name="utm_campaign" value="" data-utm="utm_campaign" />
+      <input type="hidden" name="utm_content" value="" data-utm="utm_content" />
+      <input type="hidden" name="utm_term" value="" data-utm="utm_term" />
+      <input type="hidden" name="fbclid" value="" data-utm="fbclid" />
+      <input type="hidden" name="fbc" value="" data-fbc />
+      <input type="hidden" name="fbp" value="" data-fbp />
+      <input type="hidden" name="event_id" value="" data-event-id />
+
+      <div>
+        <label for={`name-${service}`}>Your name</label>
+        <input id={`name-${service}`} name="name" type="text" required minlength="2" maxlength="120" autocomplete="name" />
+      </div>
+
+      <div class="form-row">
+        <div>
+          <label for={`email-${service}`}>Email</label>
+          <input id={`email-${service}`} name="email" type="email" required autocomplete="email" />
+        </div>
+        <div>
+          <label for={`phone-${service}`}>Phone (WhatsApp preferred)</label>
+          <input id={`phone-${service}`} name="phone" type="tel" autocomplete="tel" />
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div>
+          <label for={`eventDate-${service}`}>Date (or rough month)</label>
+          <input id={`eventDate-${service}`} name="eventDate" type="text" placeholder="e.g. June 2026" />
+        </div>
+        <div>
+          <label for={`venue-${service}`}>Venue or area</label>
+          <input id={`venue-${service}`} name="venue" type="text" placeholder="e.g. Mayfair, Canary Wharf, TBC" />
+        </div>
+      </div>
+
+      <div>
+        <label for={`message-${service}`}>Tell us about your {eventType === 'wedding' ? 'day' : eventType === 'portrait' ? 'sitting' : 'event'}</label>
+        <textarea id={`message-${service}`} name="message" required minlength="20" maxlength="4000" placeholder="Guest count, the feeling you'd like to capture, anything else worth knowing."></textarea>
+      </div>
+
+      <input type="text" name="company" tabindex="-1" autocomplete="off" style="position:absolute; left:-9999px;" aria-hidden="true" />
+
+      {turnstileKey && (
+        <div class="cf-turnstile" data-sitekey={turnstileKey} data-theme="light"></div>
+      )}
+
+      <div>
+        <button type="submit" class="btn btn-burgundy">Send Enquiry</button>
+      </div>
+
+      <div class="form-status" id={statusId} hidden></div>
+    </form>
+  </div>
+</section>
+
+<script is:inline define:vars={{ formId, statusId, service }}>
+  (function(){
+    const form = document.getElementById(formId);
+    const status = document.getElementById(statusId);
+    if (!form || !status) return;
+
+    function readCookie(name) {
+      const m = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
+      return m ? m[2] : '';
+    }
+
+    function uuid() {
+      return (crypto && crypto.randomUUID) ? crypto.randomUUID() : (Date.now() + '-' + Math.random().toString(36).slice(2, 11));
+    }
+
+    const params = new URLSearchParams(window.location.search);
+    const stored = (function(){ try { return JSON.parse(sessionStorage.getItem('lp_utms') || '{}'); } catch(e) { return {}; } })();
+    const utms = ['utm_source','utm_medium','utm_campaign','utm_content','utm_term','fbclid'];
+    const merged = Object.assign({}, stored);
+    let fresh = false;
+    utms.forEach(function(k){ const v = params.get(k); if (v) { merged[k] = v; fresh = true; } });
+    if (fresh) sessionStorage.setItem('lp_utms', JSON.stringify(merged));
+
+    form.querySelectorAll('[data-utm]').forEach(function(el){
+      const k = el.getAttribute('data-utm');
+      if (merged[k]) el.value = merged[k];
+    });
+    const fbcEl = form.querySelector('[data-fbc]'); if (fbcEl) fbcEl.value = readCookie('_fbc');
+    const fbpEl = form.querySelector('[data-fbp]'); if (fbpEl) fbpEl.value = readCookie('_fbp');
+    const eidEl = form.querySelector('[data-event-id]');
+    const eventId = uuid();
+    if (eidEl) eidEl.value = eventId;
+
+    form.addEventListener('submit', async function(e){
+      e.preventDefault();
+      status.hidden = false;
+      status.className = 'form-status';
+      status.textContent = 'Sending…';
+      try {
+        const data = new FormData(form);
+        const res = await fetch(form.action, { method: 'POST', body: data });
+        const json = await res.json().catch(function(){ return {}; });
+        if (res.ok) {
+          status.className = 'form-status success';
+          status.textContent = 'Thank you — we have your message and will reply within 24 hours.';
+          if (window.fbq) window.fbq('track', 'Lead', { value: 25, currency: 'GBP', content_category: service }, { eventID: eventId });
+          form.reset();
+        } else {
+          status.className = 'form-status error';
+          status.textContent = json.error || 'Something went wrong. Please try again or email us directly.';
+        }
+      } catch (err) {
+        status.className = 'form-status error';
+        status.textContent = 'Network error. Please try again or email us directly.';
+      }
+    });
+  })();
+</script>
