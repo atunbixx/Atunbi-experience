@@ -19,11 +19,11 @@ const turnstileKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY ?? '';
 const formId = `lead-form-${service}`;
 const statusId = `lead-status-${service}`;
 ---
-<section id="enquire">
+<section id="enquire" class="lp-band lp-band--warm">
   <div class="container">
     <div class="section-divider">Section · Enquire</div>
     <h2 class="section-title">{title.split(' ').slice(0, -1).join(' ')} <em>{title.split(' ').slice(-1)[0]?.replace(/\.$/, '')}.</em></h2>
-    <p class="section-subtitle">{subtitle}</p>
+    <p class="lp-enquire-intro">{subtitle}</p>
 
     <form class="form" id={formId} method="POST" action="/api/contact" novalidate>
       <input type="hidden" name="eventType" value={eventType} />
