@@ -1129,3 +1129,75 @@ footer { background: var(--paper); border-top: 3px double var(--ink); padding: 4
 
 /* Visually hidden — accessible labels */
 .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+
+/* === Atunbi · self-arranging wedding gallery ============================= */
+.gallery-band {
+  background: #F5EFE6;
+  color: #1A1410;
+  padding: 48px clamp(16px, 4vw, 56px) 96px;
+}
+
+/* Fallback for all browsers: CSS multi-column flow.
+   Handles mixed portrait/landscape automatically. */
+.gallery-grid {
+  column-count: 3;
+  column-gap: 16px;
+}
+@media (max-width: 1100px) { .gallery-grid { column-count: 2; } }
+@media (max-width:  640px) { .gallery-grid { column-count: 1; } }
+
+/* Progressive enhancement: native CSS masonry where supported. */
+@supports (grid-template-rows: masonry) {
+  .gallery-grid {
+    column-count: initial;
+    column-gap: initial;
+    display: grid;
+    gap: 16px;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: masonry;
+  }
+  @media (max-width: 1100px) {
+    .gallery-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 640px) {
+    .gallery-grid { grid-template-columns: 1fr; }
+  }
+}
+
+.gallery-item {
+  margin: 0 0 16px;
+  break-inside: avoid;
+  overflow: hidden;
+}
+.gallery-item img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.gallery-cta {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 64px;
+}
+.gallery-cta .btn {
+  font-family: Fraunces, serif;
+  font-size: 0.95rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 14px 24px;
+  text-decoration: none;
+  border: 1px solid currentColor;
+  display: inline-block;
+}
+.gallery-cta .btn--primary {
+  background: #5A1A2B;
+  color: #F5EFE6;
+  border-color: #5A1A2B;
+}
+.gallery-cta .btn--ghost {
+  background: transparent;
+  color: #1A1410;
+}
