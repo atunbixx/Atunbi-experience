@@ -1,5 +1,6 @@
 ---
 import PageLayout from '@layouts/PageLayout.astro';
+import { Image } from 'astro:assets';
 import { getCollection } from 'astro:content';
 
 const posts = (await getCollection('blog', ({ data }) => !data.draft)).sort(
@@ -33,7 +34,21 @@ const breadcrumbs = [
         <div class="blog-list">
           {posts.map((post) => (
             <a href={`/blog/${post.slug}`} class="blog-card">
-              <div class="blog-card-image"></div>
+              <div class="blog-card-image">
+                {post.data.heroImage && post.data.heroAlt ? (
+                  <Image
+                    src={post.data.heroImage}
+                    alt={post.data.heroAlt}
+                    widths={[480, 800, 1200]}
+                    sizes="(max-width: 600px) 100vw, (max-width: 1000px) 50vw, 33vw"
+                    loading="lazy"
+                    decoding="async"
+                    formats={['avif', 'webp']}
+                  />
+                ) : (
+                  <span class="blog-card-image-placeholder">A</span>
+                )}
+              </div>
               <div class="blog-card-meta">
                 <span class="blog-card-category">{post.data.category}</span>
                 <span class="blog-card-date">

@@ -8,7 +8,7 @@ const isCurrent = (href: string) => {
   return here === href || here.startsWith(href + '/');
 };
 ---
-<nav aria-label="Primary">
+<nav aria-label="Primary" id="site-nav">
   <ul>
     {NAV.map(({ label, href }) => (
       <li>
@@ -18,3 +18,18 @@ const isCurrent = (href: string) => {
   </ul>
   <a href={NAV_CTA.href} class="nav-cta">{NAV_CTA.label}</a>
 </nav>
+
+<script>
+  const nav = document.getElementById('site-nav');
+  const scrollCue = document.querySelector<HTMLElement>('.scroll-cue');
+
+  if (nav) {
+    const onScroll = () => {
+      const y = window.scrollY;
+      nav.classList.toggle('is-scrolled', y > 60);
+      if (scrollCue) scrollCue.classList.toggle('is-hidden', y > 120);
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+  }
+</script>
