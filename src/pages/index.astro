@@ -55,13 +55,13 @@ const seo = {
   <section class="cover">
     <div class="cover-grid">
       <div class="cover-text">
-        <div class="plate">Cover Story · Plate I</div>
+        <div class="plate">Editorial Photography · London</div>
         <h1>This Is The <em>Experience.</em></h1>
         <p class="deck">Editorial photography for London's most considered weddings, galas and portrait sittings — captured quietly, finished by hand.</p>
         <div class="cover-byline">By Atunbi · London Studio · Est. {SITE.established}</div>
         <div class="cover-ctas">
           <a href="/contact" class="btn btn-burgundy">Let's Talk About Your Event</a>
-          <a href="#plates" class="btn btn-outline">Turn The Page</a>
+          <a href="#plates" class="btn btn-outline">See the Work</a>
         </div>
         <div class="scroll-cue" aria-hidden="true">
           <span>Scroll</span>
@@ -72,7 +72,7 @@ const seo = {
         <CoverSlider slides={coverSlides} />
       ) : (
         <div class="cover-image placeholder">
-          <span class="cover-image-caption">Plate I · Cover Frame · Mayfair, 2026</span>
+          <span class="cover-image-caption">Mayfair · 2026</span>
         </div>
       )}
     </div>
@@ -90,7 +90,7 @@ const seo = {
   <section id="plates" class="plates-section">
     <div class="container">
       <div class="section-divider">Section · Portfolio</div>
-      <h2 class="section-title">Selected <em>Plates.</em></h2>
+      <h2 class="section-title">Selected <em>Work.</em></h2>
       <p class="section-subtitle">A curated edit of recent work across weddings, corporate events, editorial portraits and galas.</p>
       <div class="plates-grid">
         {plates.map((plate) => (
