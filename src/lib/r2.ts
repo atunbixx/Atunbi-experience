@@ -14,7 +14,12 @@
  *   PUBLIC_R2_BASE  e.g. https://assets.theatunbiexperience.com
  */
 
-import { S3Client, PutObjectCommand, GetObjectCommand } from '@aws-sdk/client-s3';
+import {
+  S3Client,
+  PutObjectCommand,
+  GetObjectCommand,
+  DeleteObjectCommand,
+} from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 
 const ACCOUNT_ID = import.meta.env.R2_ACCOUNT_ID ?? '';
@@ -40,7 +45,13 @@ export type GalleryEntry = {
   uploadedAt: string;
 };
 
-export type Manifest = { items: GalleryEntry[] };
+export type GalleryLayout = 'justified' | 'masonry';
+
+export type GallerySettings = { layout: GalleryLayout };
+
+export type Manifest = { items: GalleryEntry[]; settings?: GallerySettings };
+
+export const DEFAULT_SETTINGS: GallerySettings = { layout: 'justified' };
 
 export function r2Configured(): boolean {
   return Boolean(ACCOUNT_ID && ACCESS_KEY_ID && SECRET_ACCESS_KEY && BUCKET);
@@ -72,6 +83,10 @@ export function publicUrl(key: string): string {
 export async function presignUpload(key: string, contentType: string, expiresIn = 600): Promise<string> {
   const cmd = new PutObjectCommand({ Bucket: BUCKET, Key: key, ContentType: contentType });
   return getSignedUrl(client(), cmd, { expiresIn });
+}
+
+export async function deleteObject(key: string): Promise<void> {
+  await client().send(new DeleteObjectCommand({ Bucket: BUCKET, Key: key }));
 }
 
 /** Read the manifest. Tries the public URL first (fast, cached), falls back to S3 GET. */

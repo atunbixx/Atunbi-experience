@@ -1,0 +1,241 @@
+---
+export const prerender = false;
+import PageLayout from '@layouts/PageLayout.astro';
+import '../../styles/gallery-justified.css';
+
+const projectOptions = ['', 'Weddings', 'Galas', 'Portraits', 'Corporate', 'Cultural', 'Brand'];
+---
+<PageLayout title="Gallery Manager — Studio" description="Manage gallery photographs." noindex={true}>
+  <section class="lookbook-section">
+    <div class="container" style="max-width: 76rem;">
+      <div class="section-divider">Studio · Gallery Manager</div>
+      <h1 class="section-title">Manage <em>The Gallery.</em></h1>
+      <p class="section-subtitle">Upload (files or whole folders), reorder by dragging, edit details, delete, switch layout, and preview — all here. Changes publish automatically and the live gallery rebuilds.</p>
+
+      <!-- Layout + actions bar -->
+      <div style="display:flex; gap:1rem; align-items:center; flex-wrap:wrap; margin:2rem 0; padding:1rem 1.2rem; background:var(--paper); border:1px solid var(--rule);">
+        <label style="font-family:'JetBrains Mono',monospace; font-size:0.66rem; letter-spacing:0.2em; text-transform:uppercase; color:var(--burgundy);">Layout</label>
+        <select id="layout-select" style="padding:0.5rem 0.8rem; border:1px solid var(--ink); background:var(--paper); font-family:'Fraunces',serif;">
+          <option value="justified">Justified rows (even, symmetric)</option>
+          <option value="masonry">Masonry (staggered columns)</option>
+        </select>
+        <button id="save-order" class="btn btn-outline" disabled>Save order</button>
+        <span id="bar-status" style="font-family:'JetBrains Mono',monospace; font-size:0.66rem; letter-spacing:0.15em; text-transform:uppercase; color:var(--ink-soft);"></span>
+        <a href="/gallery" target="_blank" style="margin-left:auto; color:var(--burgundy);">Open live gallery →</a>
+      </div>
+
+      <!-- Upload -->
+      <div id="dropzone" style="border:1px dashed var(--rule); padding:2rem 1.5rem; text-align:center; cursor:pointer; background:var(--paper);">
+        <p style="font-family:'Fraunces',serif; font-style:italic; font-size:1.1rem; color:var(--ink-soft);">Drag photos or a folder here, or choose below</p>
+        <div style="margin-top:1rem; display:flex; gap:0.8rem; justify-content:center; flex-wrap:wrap;">
+          <button type="button" id="pick-files" class="btn btn-outline">Choose files</button>
+          <button type="button" id="pick-folder" class="btn btn-outline">Choose a folder</button>
+        </div>
+        <input id="file-input" type="file" accept="image/jpeg,image/png,image/webp,image/avif" multiple hidden />
+        <input id="folder-input" type="file" accept="image/jpeg,image/png,image/webp,image/avif" multiple hidden webkitdirectory />
+      </div>
+      <div id="upload-queue" style="margin-top:1.5rem; display:grid; gap:1rem;"></div>
+      <div style="margin-top:1rem;">
+        <button id="publish-uploads" class="btn btn-burgundy" disabled>Upload &amp; publish</button>
+        <span id="upload-status" style="margin-left:1rem; font-family:'JetBrains Mono',monospace; font-size:0.66rem; letter-spacing:0.15em; text-transform:uppercase; color:var(--ink-soft);"></span>
+      </div>
+
+      <!-- Live preview -->
+      <div class="section-divider" style="margin-top:4rem;">Live Preview</div>
+      <div id="preview" class="gallery gallery--justified" style="margin-top:2rem;"></div>
+
+      <!-- Manage existing -->
+      <div class="section-divider" style="margin-top:4rem;">Photographs <span id="count"></span></div>
+      <div id="manage-grid" style="margin-top:2rem; display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:1.5rem;"></div>
+    </div>
+  </section>
+
+  <script is:inline define:vars={{ projectOptions }}>
+  (function () {
+    const $ = (id) => document.getElementById(id);
+    const grid = $('manage-grid'), preview = $('preview'), countEl = $('count');
+    const layoutSel = $('layout-select'), saveOrderBtn = $('save-order'), barStatus = $('bar-status');
+    let items = [];
+    let dirty = false;
+
+    async function api(url, opts) {
+      const res = await fetch(url, opts);
+      const json = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(json.error || ('HTTP ' + res.status));
+      return json;
+    }
+
+    function renderPreview() {
+      const layout = layoutSel.value;
+      preview.className = 'gallery gallery--' + layout;
+      preview.innerHTML = '';
+      items.forEach((it) => {
+        const ar = (it.width && it.height) ? (it.width / it.height) : 1;
+        const a = document.createElement('a');
+        a.style.setProperty('--ar', ar.toFixed(4));
+        const fig = document.createElement('figure');
+        const img = document.createElement('img');
+        img.src = it.url; img.alt = it.alt || ''; img.loading = 'lazy';
+        fig.appendChild(img); a.appendChild(fig); preview.appendChild(a);
+      });
+    }
+
+    function card(it, idx) {
+      const el = document.createElement('div');
+      el.className = 'gm-card';
+      el.draggable = true;
+      el.dataset.key = it.key;
+      el.style.cssText = 'border:1px solid var(--rule); background:var(--paper); padding:0.8rem;';
+      const opts = projectOptions.map((p) => `<option value="${p}" ${p === (it.project||'') ? 'selected':''}>${p || '— none —'}</option>`).join('');
+      el.innerHTML = `
+        <div style="position:relative;">
+          <img src="${it.url}" alt="" style="width:100%; aspect-ratio:1; object-fit:cover; display:block; background:var(--paper-warm);" />
+          <span style="position:absolute; top:6px; left:6px; background:var(--ink); color:var(--paper); font-family:'JetBrains Mono',monospace; font-size:0.6rem; padding:2px 6px;">#${idx + 1}</span>
+        </div>
+        <label style="display:block; font-size:0.6rem; letter-spacing:0.15em; text-transform:uppercase; color:var(--burgundy); margin:0.7rem 0 0.2rem; font-family:'JetBrains Mono',monospace;">Alt (required)</label>
+        <input class="gm-alt" value="${(it.alt||'').replace(/"/g,'&quot;')}" maxlength="160" style="width:100%; padding:0.4rem; border:1px solid var(--rule); font-family:'Fraunces',serif;" />
+        <input class="gm-caption" placeholder="Caption" value="${(it.caption||'').replace(/"/g,'&quot;')}" style="width:100%; margin-top:0.4rem; padding:0.4rem; border:1px solid var(--rule); font-family:'Fraunces',serif;" />
+        <input class="gm-tags" placeholder="tags, comma separated" value="${(it.tags||[]).join(', ').replace(/"/g,'&quot;')}" style="width:100%; margin-top:0.4rem; padding:0.4rem; border:1px solid var(--rule); font-family:'Fraunces',serif;" />
+        <select class="gm-project" style="width:100%; margin-top:0.4rem; padding:0.4rem; border:1px solid var(--rule); font-family:'Fraunces',serif;">${opts}</select>
+        <div style="display:flex; gap:0.5rem; margin-top:0.6rem;">
+          <button class="gm-save btn btn-outline" style="flex:1; padding:0.5rem;">Save</button>
+          <button class="gm-del btn" style="padding:0.5rem 0.8rem; border-color:#8C2438; color:#8C2438;">Delete</button>
+        </div>
+        <div class="gm-msg" style="font-size:0.62rem; margin-top:0.4rem; color:var(--ink-soft); font-family:'JetBrains Mono',monospace;"></div>`;
+
+      el.querySelector('.gm-save').addEventListener('click', async () => {
+        const msg = el.querySelector('.gm-msg'); msg.textContent = 'Saving…';
+        try {
+          await api('/api/gallery/update', { method:'POST', headers:{'content-type':'application/json'}, body: JSON.stringify({
+            key: it.key,
+            alt: el.querySelector('.gm-alt').value,
+            caption: el.querySelector('.gm-caption').value,
+            tags: el.querySelector('.gm-tags').value.split(',').map(s=>s.trim()).filter(Boolean),
+            project: el.querySelector('.gm-project').value,
+          })});
+          msg.textContent = 'Saved ✓'; await load();
+        } catch (e) { msg.textContent = 'Error: ' + e.message; }
+      });
+      el.querySelector('.gm-del').addEventListener('click', async () => {
+        if (!confirm('Delete this photo permanently?')) return;
+        const msg = el.querySelector('.gm-msg'); msg.textContent = 'Deleting…';
+        try { await api('/api/gallery/delete', { method:'POST', headers:{'content-type':'application/json'}, body: JSON.stringify({ key: it.key })}); await load(); }
+        catch (e) { msg.textContent = 'Error: ' + e.message; }
+      });
+
+      // drag reorder
+      el.addEventListener('dragstart', (e) => { e.dataTransfer.setData('text/plain', it.key); el.style.opacity = '0.4'; });
+      el.addEventListener('dragend', () => { el.style.opacity = '1'; });
+      el.addEventListener('dragover', (e) => e.preventDefault());
+      el.addEventListener('drop', (e) => {
+        e.preventDefault();
+        const fromKey = e.dataTransfer.getData('text/plain');
+        const from = items.findIndex(x => x.key === fromKey);
+        const to = items.findIndex(x => x.key === it.key);
+        if (from === -1 || to === -1 || from === to) return;
+        const [moved] = items.splice(from, 1);
+        items.splice(to, 0, moved);
+        dirty = true; saveOrderBtn.disabled = false;
+        barStatus.textContent = 'Order changed — click Save order';
+        renderGrid(); renderPreview();
+      });
+      return el;
+    }
+
+    function renderGrid() {
+      grid.innerHTML = '';
+      items.forEach((it, i) => grid.appendChild(card(it, i)));
+      countEl.textContent = '(' + items.length + ')';
+    }
+
+    async function load() {
+      try {
+        const data = await api('/api/gallery/list');
+        items = data.items || [];
+        if (data.settings && data.settings.layout) layoutSel.value = data.settings.layout;
+        dirty = false; saveOrderBtn.disabled = true; barStatus.textContent = '';
+        renderGrid(); renderPreview();
+      } catch (e) {
+        grid.innerHTML = '<p style="color:#8C2438; font-family:Fraunces,serif;">Could not load gallery: ' + e.message + '</p>';
+      }
+    }
+
+    layoutSel.addEventListener('change', async () => {
+      renderPreview();
+      barStatus.textContent = 'Saving layout…';
+      try { await api('/api/gallery/settings', { method:'POST', headers:{'content-type':'application/json'}, body: JSON.stringify({ layout: layoutSel.value })}); barStatus.textContent = 'Layout saved ✓'; }
+      catch (e) { barStatus.textContent = 'Error: ' + e.message; }
+    });
+
+    saveOrderBtn.addEventListener('click', async () => {
+      barStatus.textContent = 'Saving order…';
+      try {
+        await api('/api/gallery/reorder', { method:'POST', headers:{'content-type':'application/json'}, body: JSON.stringify({ keys: items.map(i => i.key) })});
+        dirty = false; saveOrderBtn.disabled = true; barStatus.textContent = 'Order saved ✓ — site rebuilding';
+      } catch (e) { barStatus.textContent = 'Error: ' + e.message; }
+    });
+
+    // ---- Upload (files + folders) ----
+    const dz = $('dropzone'), fileInput = $('file-input'), folderInput = $('folder-input');
+    const queue = $('upload-queue'), publishBtn = $('publish-uploads'), upStatus = $('upload-status');
+    let pending = [];
+
+    $('pick-files').addEventListener('click', (e) => { e.stopPropagation(); fileInput.click(); });
+    $('pick-folder').addEventListener('click', (e) => { e.stopPropagation(); folderInput.click(); });
+    dz.addEventListener('click', () => fileInput.click());
+    dz.addEventListener('dragover', (e) => { e.preventDefault(); dz.style.borderColor = 'var(--burgundy)'; });
+    dz.addEventListener('dragleave', () => { dz.style.borderColor = 'var(--rule)'; });
+    dz.addEventListener('drop', (e) => { e.preventDefault(); dz.style.borderColor = 'var(--rule)'; addFiles(e.dataTransfer.files); });
+    fileInput.addEventListener('change', () => addFiles(fileInput.files));
+    folderInput.addEventListener('change', () => addFiles(folderInput.files));
+
+    function addFiles(list) {
+      [...list].forEach((file) => {
+        if (!/^image\/(jpeg|png|webp|avif)$/.test(file.type)) return;
+        const rec = { file, rel: file.webkitRelativePath || file.name, width:0, height:0, key:null, state:'ready' };
+        const row = document.createElement('div');
+        row.style.cssText = 'display:grid; grid-template-columns:80px 1fr; gap:1rem; align-items:center; border:1px solid var(--rule); padding:0.6rem; background:var(--paper);';
+        const url = URL.createObjectURL(file);
+        const probe = new Image(); probe.onload = () => { rec.width = probe.naturalWidth; rec.height = probe.naturalHeight; }; probe.src = url;
+        row.innerHTML = `<img src="${url}" style="width:80px; height:80px; object-fit:cover;" /><div><div style="font-family:Fraunces,serif;">${rec.rel}</div><input class="u-alt" placeholder="Alt text (required, describe the scene)" style="width:100%; margin-top:0.4rem; padding:0.4rem; border:1px solid var(--rule); font-family:Fraunces,serif;" /><div class="u-state" style="font-size:0.6rem; font-family:JetBrains Mono,monospace; color:var(--ink-soft); margin-top:0.3rem;">Ready</div></div>`;
+        rec.row = row; queue.appendChild(row); pending.push(rec);
+      });
+      publishBtn.disabled = pending.length === 0;
+      upStatus.textContent = pending.length + ' queued';
+    }
+
+    publishBtn.addEventListener('click', async () => {
+      for (const rec of pending) {
+        if ((rec.row.querySelector('.u-alt').value || '').trim().length < 5) {
+          rec.row.querySelector('.u-alt').focus(); upStatus.textContent = 'Every photo needs alt text (min 5 chars).'; return;
+        }
+      }
+      publishBtn.disabled = true; upStatus.textContent = 'Uploading…';
+      const done = [];
+      for (const rec of pending) {
+        const st = rec.row.querySelector('.u-state');
+        try {
+          st.textContent = 'Signing…';
+          const folder = rec.rel.includes('/') ? 'gallery/' + rec.rel.split('/').slice(0, -1).join('/') : 'gallery';
+          const p = await api('/api/upload/presign', { method:'POST', headers:{'content-type':'application/json'}, body: JSON.stringify({ filename: rec.file.name, contentType: rec.file.type, folder })});
+          st.textContent = 'Uploading…';
+          const put = await fetch(p.uploadUrl, { method:'PUT', headers:{'content-type':rec.file.type}, body: rec.file });
+          if (!put.ok) throw new Error('R2 ' + put.status);
+          rec.key = p.key; st.textContent = 'Uploaded ✓';
+          done.push({ key: p.key, width: rec.width, height: rec.height, alt: rec.row.querySelector('.u-alt').value.trim() });
+        } catch (e) { st.textContent = 'Error: ' + e.message; }
+      }
+      if (done.length) {
+        upStatus.textContent = 'Publishing…';
+        try {
+          await api('/api/upload/commit', { method:'POST', headers:{'content-type':'application/json'}, body: JSON.stringify({ items: done })});
+          upStatus.textContent = `Published ${done.length}. Rebuilding…`;
+          queue.innerHTML = ''; pending = []; await load();
+        } catch (e) { upStatus.textContent = 'Publish error: ' + e.message; publishBtn.disabled = false; }
+      } else { upStatus.textContent = 'Nothing uploaded — see errors.'; publishBtn.disabled = false; }
+    });
+
+    load();
+  })();
+  </script>
+</PageLayout>

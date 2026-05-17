@@ -9,7 +9,11 @@ import crypto from 'node:crypto';
  * at request time on Vercel.
  */
 
-const PROTECTED = [/^\/admin(?!\/login)(\/|$)/, /^\/api\/upload(\/|$)/];
+const PROTECTED = [
+  /^\/admin(?!\/login)(\/|$)/,
+  /^\/api\/upload(\/|$)/,
+  /^\/api\/gallery(\/|$)/,
+];
 
 function expectedToken(): string | null {
   const pw = import.meta.env.ADMIN_PASSWORD;

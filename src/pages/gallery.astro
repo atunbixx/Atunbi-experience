@@ -5,8 +5,9 @@ import Lightbox from '@components/Lightbox.astro';
 import { getCollection } from 'astro:content';
 import { readManifest, publicUrl } from '@lib/r2';
 
-// Primary source: photographs uploaded via /admin/upload (R2 manifest).
+// Primary source: photographs uploaded via /admin/gallery (R2 manifest).
 const manifest = await readManifest();
+const galleryLayout = manifest.settings?.layout ?? 'justified';
 const r2Images = manifest.items.map((g) => ({
   r2Url: publicUrl(g.key),
   width: g.width,
@@ -66,7 +67,7 @@ const breadcrumbs = [
         <div data-reveal>
           <Gallery
             images={allImages}
-            layout="justified"
+            layout={galleryLayout}
             groupId="site-gallery"
             sizes="(max-width: 600px) 100vw, (max-width: 900px) 50vw, 33vw"
           />
