@@ -3,14 +3,72 @@ import BaseLayout from './BaseLayout.astro';
 import Masthead from '@components/Masthead.astro';
 import Nav from '@components/Nav.astro';
 import Footer from '@components/Footer.astro';
+import { WHATSAPP } from '@lib/site';
 
 export type Props = import('./BaseLayout.astro').Props;
 const props = Astro.props;
+
+// Reuse the site's real CTA targets (same as everywhere else): enquiry is
+// /contact; WhatsApp uses the configured number, /contact fallback so the
+// button is never broken.
+const enquireHref = '/contact';
+const whatsappHref = WHATSAPP.number ? `https://wa.me/${WHATSAPP.number}` : '/contact';
+
+// Drawer order is fixed by spec; hrefs are the site's real routes.
+const drawerLinks = [
+  { label: 'Pricing', href: '/lookbook' },
+  { label: 'Weddings', href: '/weddings' },
+  { label: 'Portraits', href: '/portrait-sittings' },
+  { label: 'Events', href: '/events' },
+  { label: 'Personal Work', href: '/gallery' },
+  { label: 'Journal', href: '/blog' },
+  { label: 'About', href: '/about' },
+];
 ---
 <BaseLayout {...props}>
   <slot name="head" slot="head" />
   <Masthead />
   <Nav />
+
+  <div class="r-burger" role="navigation" aria-label="Mobile menu bar">
+    <button class="r-burger-btn" aria-label="Open menu" aria-controls="r-drawer" aria-expanded="false">☰</button>
+    <a class="r-enquire" href={enquireHref}>Enquire</a>
+  </div>
+
   <slot />
   <Footer />
+
+  <nav id="r-drawer" class="r-drawer" aria-hidden="true">
+    <button class="r-close" aria-label="Close menu">✕</button>
+    {drawerLinks.map((l) => <a href={l.href}>{l.label}</a>)}
+    <a href={enquireHref} class="r-drawer-cta">Enquire →</a>
+  </nav>
+
+  <div class="r-cta-bar" aria-label="Quick contact">
+    <a class="r-primary" href={enquireHref}>Begin the Conversation</a>
+    <a class="r-ghost" href={whatsappHref} rel="noopener">WhatsApp</a>
+  </div>
+
+  <script is:inline>
+    (() => {
+      const drawer = document.getElementById('r-drawer');
+      const burger = document.querySelector('.r-burger-btn');
+      const closeBtn = document.querySelector('.r-close');
+      if (!drawer || !burger) return;
+      const open = () => {
+        drawer.setAttribute('aria-hidden', 'false');
+        burger.setAttribute('aria-expanded', 'true');
+        document.body.style.overflow = 'hidden';
+      };
+      const close = () => {
+        drawer.setAttribute('aria-hidden', 'true');
+        burger.setAttribute('aria-expanded', 'false');
+        document.body.style.overflow = '';
+      };
+      burger.addEventListener('click', open);
+      closeBtn && closeBtn.addEventListener('click', close);
+      document.addEventListener('keydown', (e) => { if (e.key === 'Escape') close(); });
+      drawer.querySelectorAll('a').forEach((a) => a.addEventListener('click', close));
+    })();
+  </script>
 </BaseLayout>

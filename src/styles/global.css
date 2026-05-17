@@ -1201,3 +1201,122 @@ footer { background: var(--paper); border-top: 3px double var(--ink); padding: 4
   background: transparent;
   color: #1A1410;
 }
+
+/* ===== Atunbi · responsive mobile layout ============================ */
+*, *::before, *::after { box-sizing: border-box; }
+html, body { overflow-x: hidden; }
+
+/* Mobile DOM is hidden on desktop */
+.r-burger, .r-drawer, .r-cta-bar { display: none; }
+
+@media (max-width: 900px) {
+  /* Masthead → stacked, centered, sticky */
+  header.masthead {
+    display: block !important;
+    text-align: center !important;
+    padding: 12px 16px 8px !important;
+    position: sticky; top: 0; z-index: 40;
+    background: #F5EFE6;
+    border-bottom: 1px solid rgba(26,20,16,.08);
+  }
+  header.masthead > * {
+    grid-area: unset !important;
+    width: auto !important;
+    text-align: center !important;
+    display: block !important;
+    margin: 2px auto !important;
+  }
+  header.masthead .issue,
+  header.masthead .vol,
+  header.masthead [class*='issue'],
+  header.masthead [class*='vol'] { display: none !important; }
+
+  /* Real-DOM adaptation: this site's issue/vol chrome lives in
+     .masthead-meta and .masthead-right (no .vol class to match above).
+     Hide those containers so mobile shows the logo only — additive,
+     no existing rule or markup changed. */
+  header.masthead .masthead-meta,
+  header.masthead .masthead-right { display: none !important; }
+
+  /* Hide the desktop horizontal nav, show the hamburger bar */
+  #site-nav { display: none !important; }
+  .r-burger {
+    display: flex; align-items: center; justify-content: space-between;
+    position: sticky; top: 56px; z-index: 39;
+    background: #F5EFE6;
+    padding: 6px 12px;
+    border-bottom: 1px solid rgba(26,20,16,.08);
+  }
+  .r-burger-btn {
+    width: 44px; height: 44px; border: 0; background: transparent;
+    font-size: 22px; color: #1A1410; cursor: pointer;
+  }
+  .r-enquire {
+    display: inline-flex; align-items: center; min-height: 44px; padding: 0 16px;
+    background: #5A1A2B; color: #F5EFE6;
+    font-family: Fraunces, serif; font-size: .82rem; letter-spacing: .14em;
+    text-transform: uppercase; text-decoration: none;
+  }
+
+  /* Drawer */
+  .r-drawer {
+    display: flex; flex-direction: column; gap: 4px;
+    position: fixed; inset: 0; z-index: 60; background: #F5EFE6;
+    transform: translateX(100%); transition: transform .25s ease;
+    padding: 24px 24px 96px; overflow-y: auto;
+  }
+  .r-drawer[aria-hidden="false"] { transform: translateX(0); }
+  .r-close {
+    align-self: flex-end; width: 44px; height: 44px;
+    border: 0; background: transparent; font-size: 26px; color: #1A1410;
+  }
+  .r-drawer a {
+    font-family: Fraunces, serif; font-size: 1.2rem;
+    text-decoration: none; color: #1A1410;
+    padding: 14px 4px; min-height: 48px;
+    display: flex; align-items: center;
+    border-bottom: 1px solid rgba(26,20,16,.08);
+  }
+  .r-drawer .r-drawer-cta { color: #5A1A2B; border-bottom: 0; margin-top: 16px; }
+
+  /* Sticky bottom CTA bar */
+  .r-cta-bar {
+    display: flex; gap: 8px;
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 50;
+    padding: 10px 12px calc(10px + env(safe-area-inset-bottom));
+    background: rgba(245,239,230,.96);
+    backdrop-filter: blur(8px);
+    border-top: 1px solid rgba(26,20,16,.08);
+  }
+  .r-cta-bar a {
+    flex: 1; min-height: 48px;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-family: Fraunces, serif; font-size: .82rem; letter-spacing: .14em;
+    text-transform: uppercase; text-decoration: none;
+  }
+  .r-primary { background: #5A1A2B; color: #F5EFE6; }
+  .r-ghost   { background: transparent; color: #1A1410; border: 1px solid #1A1410; }
+
+  /* Hide the inline gallery CTA on small screens; sticky bar replaces it */
+  .gallery-cta { display: none !important; }
+
+  /* Give the gallery breathing room above the sticky CTA */
+  .gallery-band { padding: 16px 0 140px !important; }
+}
+
+/* Phone: single-column gallery, full bleed */
+@media (max-width: 640px) {
+  .gallery-grid { column-count: 1 !important; column-gap: 0 !important; display: block !important; }
+  .gallery-item { margin: 0 0 8px !important; }
+  @supports (grid-template-rows: masonry) {
+    .gallery-grid { grid-template-columns: 1fr !important; }
+  }
+}
+
+/* Tablet: 2-column gallery */
+@media (min-width: 641px) and (max-width: 900px) {
+  .gallery-grid { column-count: 2 !important; column-gap: 12px !important; }
+  @supports (grid-template-rows: masonry) {
+    .gallery-grid { grid-template-columns: repeat(2, 1fr) !important; }
+  }
+}
