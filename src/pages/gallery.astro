@@ -3,12 +3,12 @@ import PageLayout from '@layouts/PageLayout.astro';
 import Gallery from '@components/Gallery.astro';
 import Lightbox from '@components/Lightbox.astro';
 import { getCollection } from 'astro:content';
-import { readManifest, publicUrl } from '@lib/r2';
+import { readManifest, itemsForSection, publicUrl } from '@lib/r2';
 
-// Primary source: photographs uploaded via /admin/gallery (R2 manifest).
+// Personal Work = the "personal-work" upload section (street & travel).
 const manifest = await readManifest();
 const galleryLayout = manifest.settings?.layout ?? 'justified';
-const r2Images = manifest.items.map((g) => ({
+const r2Images = itemsForSection(manifest.items, 'personal-work').map((g) => ({
   r2Url: publicUrl(g.key),
   width: g.width,
   height: g.height,

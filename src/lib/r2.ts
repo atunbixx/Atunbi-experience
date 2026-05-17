@@ -32,8 +32,26 @@ export const R2_PUBLIC_BASE =
 
 const MANIFEST_KEY = 'gallery/manifest.json';
 
+export type GallerySection = 'weddings' | 'portraits' | 'events' | 'personal-work';
+
+export const SECTIONS: { value: GallerySection; label: string }[] = [
+  { value: 'weddings', label: 'Weddings' },
+  { value: 'portraits', label: 'Portraits' },
+  { value: 'events', label: 'Events' },
+  { value: 'personal-work', label: 'Personal Work' },
+];
+
+// Entries uploaded before sections existed have no `section`; treat them as
+// Personal Work so nothing the owner already uploaded disappears.
+export const DEFAULT_SECTION: GallerySection = 'personal-work';
+
+export function isSection(v: unknown): v is GallerySection {
+  return v === 'weddings' || v === 'portraits' || v === 'events' || v === 'personal-work';
+}
+
 export type GalleryEntry = {
-  key: string; // object path in the bucket, e.g. weddings/mayfair-01.jpg
+  key: string; // object path in the bucket, e.g. gallery/weddings/mayfair-01.jpg
+  section: GallerySection;
   alt: string;
   caption?: string;
   description?: string;
@@ -44,6 +62,12 @@ export type GalleryEntry = {
   order: number;
   uploadedAt: string;
 };
+
+export function itemsForSection(items: GalleryEntry[], section: GallerySection): GalleryEntry[] {
+  return items
+    .filter((it) => (isSection(it.section) ? it.section : DEFAULT_SECTION) === section)
+    .sort((a, b) => a.order - b.order);
+}
 
 export type GalleryLayout = 'justified' | 'masonry';
 

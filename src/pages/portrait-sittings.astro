@@ -1,122 +1,27 @@
 ---
 import PageLayout from '@layouts/PageLayout.astro';
-import PlateCard from '@components/PlateCard.astro';
-import LeadForm from '@components/LeadForm.astro';
-import WhatsAppCTA from '@components/WhatsAppCTA.astro';
-import { Image } from 'astro:assets';
-import { SITE, SERVICES } from '@lib/site';
-import '../styles/lead-gen.css';
+import SectionGallery from '@components/SectionGallery.astro';
 
-import platePortrait from '../assets/uploads/plates/03-portrait.jpg';
-import plateWedding from '../assets/uploads/plates/01-wedding.jpg';
-import plateCorporate from '../assets/uploads/plates/02-corporate.jpg';
-import plateGala from '../assets/uploads/plates/04-gala.jpg';
-import plateCultural from '../assets/uploads/plates/05-cultural.jpg';
-import plateBrand from '../assets/uploads/plates/06-brand.jpg';
-
-const service = SERVICES.find((s) => s.slug === 'portrait-sittings')!;
 const breadcrumbs = [
   { name: 'Home', url: '/' },
-  { name: 'Portrait Sittings', url: '/portrait-sittings' },
+  { name: 'Portraits', url: '/portrait-sittings' },
 ];
 
-const plates = [
-  { number: '01', title: 'The Sitting', category: 'Studio Light', image: platePortrait, alt: 'Editorial portrait, studio light' },
-  { number: '02', title: 'The Bride', category: 'Window Light', image: plateWedding, alt: 'Bridal portrait, soft window light' },
-  { number: '03', title: 'The Headshot', category: 'Corporate', image: plateCorporate, alt: 'Corporate headshot' },
-  { number: '04', title: 'The Brand', category: 'On Location', image: plateBrand, alt: 'Brand portrait on location' },
-  { number: '05', title: 'The Figure', category: 'Editorial', image: plateGala, alt: 'Editorial portrait, gala setting' },
-  { number: '06', title: 'The Story', category: 'Cultural', image: plateCultural, alt: 'Cultural portrait' },
-];
-
-const faqs = [
-  { q: 'Studio or location?', a: 'Both available. Our London studio for clean editorial light; or your home, a private members club, a park — wherever feels right for the sitting.' },
-  { q: 'What is included for £450?', a: 'Two-hour session, two styled looks, twenty hand-finished images, personal use license, delivered within fourteen days.' },
-  { q: 'Family sittings — how does it scale?', a: 'Pricing scales lightly with group size. Tell us numbers and ages and we will quote.' },
-  { q: 'Headshots for personal branding?', a: 'Covered under the Portrait sitting, with a commercial license available as an add-on. Agency-style packages quoted bespoke.' },
-  { q: 'Will the images feel like everyone else\'s family photos?', a: 'No. We approach a portrait the way we approach an editorial — light, restraint, and a quiet hand. The frames are made to live on a wall, not in a folder.' },
-];
-
-const quotes = [
-  { quote: 'No "say cheese". Just our family, the way we actually look together.', who: 'The Patel Family', context: 'Hampstead Heath · Spring 2025' },
-  { quote: 'Sat for thirty minutes and got a portrait my partner now keeps above the desk.', who: 'David L.', context: 'Studio sitting · Autumn 2025' },
-  { quote: 'The kindest portrait session our newborn could have asked for. Calm, patient, gorgeous.', who: 'Sarah & Idris', context: 'Newborn sitting · Winter 2025' },
+const demo = [
+  { src: '/images/portraits/01.jpg', w: 1600, h: 2000, alt: 'Editorial studio portrait' },
+  { src: '/images/portraits/02.jpg', w: 1600, h: 1067, alt: 'Bridal portrait in soft window light' },
+  { src: '/images/portraits/03.jpg', w: 1600, h: 1068, alt: 'A couple portrait at golden hour' },
+  { src: '/images/portraits/04.jpg', w: 1600, h: 1068, alt: 'Editorial cultural portrait' },
+  { src: '/images/portraits/05.jpg', w: 1600, h: 1067, alt: 'Brand portrait on location' },
+  { src: '/images/portraits/06.jpg', w: 1600, h: 900, alt: 'Corporate headshot portrait' },
 ];
 ---
 <PageLayout
-  title="Editorial London Portrait & Family Photography"
-  description="Editorial portrait sittings in London. Studio or location. Two styled looks, twenty hand-finished frames. From £450."
-  keywords={['portrait photographer London', 'family photographer London', 'editorial portrait London', 'headshot photographer London']}
+  title="Editorial London Portrait Photography"
+  description="Editorial portrait photography in London. Studio or location, hand-finished. A selection of recent portrait work."
+  keywords={['portrait photographer London', 'editorial portrait London', 'headshot photographer London', 'family portrait London']}
   jsonLdType="page"
   breadcrumbs={breadcrumbs}
 >
-  <section class="cover">
-    <div class="cover-grid">
-      <div class="cover-text">
-        <div class="plate">{service.eyebrow}</div>
-        <h1>Sittings,<br />in <em>Light.</em></h1>
-        <p class="deck">Studio or location. Two styled looks, twenty hand-finished frames. A portrait made the way we make an editorial. From £450.</p>
-        <div class="cover-byline">By Atunbi · London Studio · Est. {SITE.established}</div>
-        <div class="cover-ctas lp-hero-ctas">
-          <a href="#enquire" class="btn btn-burgundy">Begin The Conversation</a>
-          <WhatsAppCTA prefill={service.waPrefill} source="portraits-hero" variant="wa" label="WhatsApp" />
-        </div>
-        <p class="lp-hero-aside">Prefer to browse first? <a href="/lookbook">See the Lookbook →</a></p>
-      </div>
-      <figure class="cover-image">
-        <Image src={platePortrait} alt="Editorial portrait sitting, studio light" widths={[600, 1000, 1600]} sizes="(min-width: 900px) 58vw, 100vw" loading="eager" />
-        <figcaption class="cover-image-caption">Studio · 2025</figcaption>
-      </figure>
-    </div>
-  </section>
-
-  <section class="plates-section lp-band lp-band--cream">
-    <div class="container">
-      <div class="section-divider">Selected Portraits</div>
-      <h2 class="section-title">Portraits, Hand <em>Finished.</em></h2>
-      <div class="plates-grid" style="margin-top: 3.5rem;">
-        {plates.map((p) => (
-          <PlateCard number={p.number} title={p.title} category={p.category} href="/portfolio" image={p.image} alt={p.alt} />
-        ))}
-      </div>
-    </div>
-  </section>
-
-  <section class="lp-band lp-band--ink">
-    <div class="container">
-      <div class="section-divider">Section · In Their Words</div>
-      <h2 class="section-title">Sittings That <em>Settled In.</em></h2>
-      <div class="lp-quotes">
-        {quotes.map((t) => (
-          <figure class="lp-quote">
-            <span class="lp-quote-mark">&#8220;</span>
-            <blockquote>{t.quote}</blockquote>
-            <figcaption><span class="who">{t.who}</span><br />{t.context}</figcaption>
-          </figure>
-        ))}
-      </div>
-    </div>
-  </section>
-
-  <section class="lp-band lp-band--paper">
-    <div class="container">
-      <div class="section-divider">Section · Frequently Asked</div>
-      <h2 class="section-title">Practical Notes, <em>Plainly Said.</em></h2>
-      <div class="lp-faq">
-        {faqs.map((f) => (
-          <details>
-            <summary>{f.q}<span class="mark">+</span></summary>
-            <div class="lp-faq-answer">{f.a}</div>
-          </details>
-        ))}
-      </div>
-    </div>
-  </section>
-
-  <LeadForm
-    service="portrait-sittings"
-    eventType="portrait"
-    title="Tell Us About The Sitting."
-    subtitle="Who, where, and when you'd like to sit. We'll come back within twenty-four hours."
-  />
+  <SectionGallery section="portraits" srTitle="Editorial Portrait Photography in London" fallback={demo} />
 </PageLayout>
