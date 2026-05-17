@@ -21,12 +21,12 @@ const breadcrumbs = [
 ];
 
 const plates = [
-  { number: 'Plate I', title: 'The Ceremony', category: 'Mayfair · 2025', image: shot01, alt: 'Wedding ceremony, Mayfair townhouse' },
-  { number: 'Plate II', title: 'The Couple', category: 'Golden Hour', image: shot02, alt: 'Couple portrait at golden hour' },
-  { number: 'Plate III', title: 'The Detail', category: 'Rings & Vows', image: shot03, alt: 'Wedding rings detail' },
-  { number: 'Plate IV', title: 'The Reception', category: 'After Dark', image: shot04, alt: 'Reception dance floor' },
-  { number: 'Plate V', title: 'The Portrait', category: 'Editorial', image: platePortrait, alt: 'Editorial bridal portrait' },
-  { number: 'Plate VI', title: 'The First Look', category: 'Quiet Moment', image: hero, alt: 'First look, private moment' },
+  { number: '01', title: 'The Ceremony', category: 'Mayfair · 2025', image: shot01, alt: 'Wedding ceremony, Mayfair townhouse' },
+  { number: '02', title: 'The Couple', category: 'Golden Hour', image: shot02, alt: 'Couple portrait at golden hour' },
+  { number: '03', title: 'The Detail', category: 'Rings & Vows', image: shot03, alt: 'Wedding rings detail' },
+  { number: '04', title: 'The Reception', category: 'After Dark', image: shot04, alt: 'Reception dance floor' },
+  { number: '05', title: 'The Portrait', category: 'Editorial', image: platePortrait, alt: 'Editorial bridal portrait' },
+  { number: '06', title: 'The First Look', category: 'Quiet Moment', image: hero, alt: 'First look, private moment' },
 ];
 
 const faqs = [
@@ -66,14 +66,14 @@ const quotes = [
       </div>
       <figure class="cover-image">
         <Image src={hero} alt="Mayfair townhouse wedding — first look" widths={[600, 1000, 1600]} sizes="(min-width: 900px) 58vw, 100vw" loading="eager" />
-        <figcaption class="cover-image-caption">Plate I · Mayfair · 2025</figcaption>
+        <figcaption class="cover-image-caption">Mayfair · 2025</figcaption>
       </figure>
     </div>
   </section>
 
   <section class="plates-section lp-band lp-band--cream">
     <div class="container">
-      <div class="section-divider">Section · Plates From Weddings</div>
+      <div class="section-divider">Selected Weddings</div>
       <h2 class="section-title">A Wedding, in <em>Six Frames.</em></h2>
       <div class="plates-grid" style="margin-top: 3.5rem;">
         {plates.map((p) => (

@@ -30,8 +30,8 @@ export async function getStaticPaths() {
     { slug: 'default', title: SITE.name, kicker: 'Editorial Photography · London' },
     { slug: 'home', title: SITE.name, kicker: SITE.tagline },
     { slug: 'blog', title: 'The Journal', kicker: SITE.shortName },
-    { slug: 'portfolio', title: 'Selected Plates', kicker: SITE.shortName },
-    { slug: 'lookbook', title: 'Considered Investment', kicker: SITE.shortName },
+    { slug: 'portfolio', title: 'Selected Work', kicker: SITE.shortName },
+    { slug: 'lookbook', title: 'Pricing', kicker: SITE.shortName },
     { slug: 'about', title: 'Meet Atunbi', kicker: SITE.shortName },
     { slug: 'contact', title: 'Begin The Conversation', kicker: SITE.shortName },
   ];

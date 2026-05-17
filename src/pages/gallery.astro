@@ -40,28 +40,28 @@ const allImages = r2Images.length > 0 ? r2Images : projectImages;
 
 const breadcrumbs = [
   { name: 'Home', url: '/' },
-  { name: 'Gallery', url: '/gallery' },
+  { name: 'Personal Work', url: '/gallery' },
 ];
 ---
 <PageLayout
-  title="Gallery — Every Photograph"
-  description="The complete Atunbi photography archive — London weddings, galas, corporate events and editorial portraits, all in one lightbox-enabled view."
-  keywords={['London photographer gallery', 'wedding photography gallery London', 'editorial photographer archive']}
+  title="Personal Work — Street & Travel Photography"
+  description="Personal work by Atunbi — street photography and travels. Unbriefed, exploratory frames made away from client commissions, across London and beyond."
+  keywords={['street photography London', 'travel photography', 'personal photography project', 'documentary photographer London']}
   breadcrumbs={breadcrumbs}
 >
   <section class="plates-section" style="padding-top: 4rem;">
     <div class="container">
       <nav class="breadcrumbs" aria-label="Breadcrumb">
-        <a href="/">Home</a><span class="sep">/</span><span>Gallery</span>
+        <a href="/">Home</a><span class="sep">/</span><span>Personal Work</span>
       </nav>
 
-      <div class="section-divider" data-reveal>Section · Archive</div>
-      <h1 class="section-title" data-reveal>Every <em>Photograph.</em></h1>
-      <p class="section-subtitle" data-reveal>The complete archive across every project — click any frame to open the lightbox, swipe or use the arrow keys to browse.</p>
+      <div class="section-divider" data-reveal>Personal Work</div>
+      <h1 class="section-title" data-reveal>Street &amp; <em>Travel.</em></h1>
+      <p class="section-subtitle" data-reveal>Work made for myself — street photography and travels, away from client briefs, where I can explore freely. Click any frame to open it full-screen.</p>
 
       {allImages.length === 0 ? (
         <p style="text-align:center; font-style:italic; color:var(--ink-soft); margin: 4rem 0;">
-          The archive is being prepared. Real photographs upload via the <a href="/keystatic" style="color:var(--burgundy);">studio dashboard</a> and appear here automatically.
+          This collection is being prepared. Photographs are added via the <a href="/admin/gallery" style="color:var(--burgundy);">gallery manager</a> and appear here automatically.
         </p>
       ) : (
         <div data-reveal>
