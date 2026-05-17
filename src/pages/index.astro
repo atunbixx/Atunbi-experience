@@ -3,8 +3,23 @@ import PageLayout from '@layouts/PageLayout.astro';
 import PlateCard from '@components/PlateCard.astro';
 import CoverSlider from '@components/CoverSlider.astro';
 import Lightbox from '@components/Lightbox.astro';
+import { Image } from 'astro:assets';
 import { getCollection, getEntry } from 'astro:content';
 import { SITE } from '@lib/site';
+
+// Why section images
+import whyEditorialImg from '../assets/uploads/projects/mayfair-townhouse-wedding/02-couple.jpg';
+import whyDiscreetImg from '../assets/uploads/projects/mayfair-townhouse-wedding/01-ceremony.jpg';
+import whyHandImg from '../assets/uploads/plates/03-portrait.jpg';
+import whyLondonImg from '../assets/uploads/projects/canary-wharf-gala/01-keynote.jpg';
+
+// Testimonial images
+import testimonial1Img from '../assets/uploads/plates/01-wedding.jpg';
+import testimonial2Img from '../assets/uploads/plates/04-gala.jpg';
+import testimonial3Img from '../assets/uploads/plates/03-portrait.jpg';
+
+// Meet portrait
+import meetPortraitImg from '../assets/uploads/projects/mayfair-townhouse-wedding/hero.jpg';
 
 const platesEntry = await getEntry('plates', 'index');
 const plates = platesEntry?.data.items ?? [];
@@ -47,6 +62,10 @@ const seo = {
         <div class="cover-ctas">
           <a href="/contact" class="btn btn-burgundy">Let's Talk About Your Event</a>
           <a href="#plates" class="btn btn-outline">Turn The Page</a>
+        </div>
+        <div class="scroll-cue" aria-hidden="true">
+          <span>Scroll</span>
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
         </div>
       </div>
       {coverSlides.length > 0 ? (
@@ -105,16 +124,84 @@ const seo = {
       <div class="section-divider">Section · The Standard</div>
       <h2 class="section-title">Why Clients <em>Choose Us.</em></h2>
       <p class="section-subtitle">Four things that, taken together, make the difference between a photographer and a finished body of work.</p>
-      <div class="why-grid">
-        <div class="why-item"><div class="why-num">i.</div><h3>An Editorial Eye</h3><p>Every frame is composed with intent. We craft images that hold their power years after the event.</p></div>
-        <div class="why-item"><div class="why-num">ii.</div><h3>Discreet Coverage</h3><p>We move quietly through your event, so the photographs feel honest rather than performed.</p></div>
-        <div class="why-item"><div class="why-num">iii.</div><h3>Hand-Finished</h3><p>No bulk dumps, no AI presets. Every image is finished by hand and delivered as a curated final gallery.</p></div>
-        <div class="why-item"><div class="why-num">iv.</div><h3>London-Native</h3><p>From Mayfair townhouses to East End warehouses, we know the venues, the light, and the rhythm.</p></div>
+    </div>
+    <div class="why-feature" data-reveal>
+      <div class="why-feature-row">
+        <div class="why-feature-image">
+          <Image src={whyEditorialImg} alt="Bride and groom in a quiet moment after the ceremony, soft window light." widths={[640, 1000, 1400]} sizes="(max-width: 900px) 100vw, 58vw" loading="lazy" decoding="async" formats={['avif', 'webp']} />
+        </div>
+        <div class="why-feature-text">
+          <div class="why-feature-num">i.</div>
+          <h3 class="why-feature-title">An Editorial Eye</h3>
+          <p class="why-feature-body">Every frame is composed with intent. We craft images that hold their power years after the event — not snapshots, but photographs.</p>
+        </div>
       </div>
-      <div class="letters">
-        <div class="letter"><div class="letter-stars">★★★★★</div><p>Atunbi captured our wedding in a way that felt like a film. Every guest commented on how present yet invisible the photographer was.</p><div class="letter-author">Olivia &amp; James</div><div class="letter-source">via AddToEvent · Mayfair Wedding</div></div>
-        <div class="letter"><div class="letter-stars">★★★★★</div><p>We hired Atunbi for our annual gala. The images elevated the entire campaign that followed. Already booked for next year.</p><div class="letter-author">Sarah K., Marketing Director</div><div class="letter-source">via Bark · Canary Wharf Gala</div></div>
-        <div class="letter"><div class="letter-stars">★★★★★</div><p>Refined, calm, brilliant. The portraits we received were the best we've ever had taken — full stop. Worth every pound.</p><div class="letter-author">Daniel M.</div><div class="letter-source">via AddToEvent · Family Portrait</div></div>
+      <div class="why-feature-row reverse">
+        <div class="why-feature-image">
+          <Image src={whyDiscreetImg} alt="Bride entering the ceremony in a candle-lit Mayfair drawing room." widths={[640, 1000, 1400]} sizes="(max-width: 900px) 100vw, 58vw" loading="lazy" decoding="async" formats={['avif', 'webp']} />
+        </div>
+        <div class="why-feature-text">
+          <div class="why-feature-num">ii.</div>
+          <h3 class="why-feature-title">Discreet Coverage</h3>
+          <p class="why-feature-body">We move quietly through your event, so the photographs feel honest rather than performed. Guests forget the camera is there — that's the aim.</p>
+        </div>
+      </div>
+      <div class="why-feature-row">
+        <div class="why-feature-image">
+          <Image src={whyHandImg} alt="Editorial portrait — close detail, hand-finished." widths={[640, 1000, 1400]} sizes="(max-width: 900px) 100vw, 58vw" loading="lazy" decoding="async" formats={['avif', 'webp']} />
+        </div>
+        <div class="why-feature-text">
+          <div class="why-feature-num">iii.</div>
+          <h3 class="why-feature-title">Hand-Finished</h3>
+          <p class="why-feature-body">No bulk dumps, no AI presets. Every image is finished by hand and delivered as a curated final gallery — the work reflects the day it deserves.</p>
+        </div>
+      </div>
+      <div class="why-feature-row reverse">
+        <div class="why-feature-image">
+          <Image src={whyLondonImg} alt="London corporate gala — keynote speaker on stage, Canary Wharf." widths={[640, 1000, 1400]} sizes="(max-width: 900px) 100vw, 58vw" loading="lazy" decoding="async" formats={['avif', 'webp']} />
+        </div>
+        <div class="why-feature-text">
+          <div class="why-feature-num">iv.</div>
+          <h3 class="why-feature-title">London-Native</h3>
+          <p class="why-feature-body">From Mayfair townhouses to Canary Wharf conference halls, we know the venues, the light at every hour, and the city's rhythm.</p>
+        </div>
+      </div>
+    </div>
+    <div class="container">
+      <div class="letters" style="margin-top: 5rem; margin-bottom: 2rem;">
+        <div class="letter" data-reveal>
+          <div class="letter-img-wrapper">
+            <Image src={testimonial1Img} alt="Mayfair wedding — couple together" widths={[480, 800]} sizes="(max-width: 600px) 100vw, 33vw" loading="lazy" decoding="async" formats={['avif', 'webp']} />
+          </div>
+          <div class="letter-body">
+            <div class="letter-stars">★★★★★</div>
+            <p>Atunbi captured our wedding in a way that felt like a film. Every guest commented on how present yet invisible the photographer was.</p>
+            <div class="letter-author">Olivia &amp; James</div>
+            <div class="letter-source">via AddToEvent · Mayfair Wedding</div>
+          </div>
+        </div>
+        <div class="letter" data-reveal data-reveal-delay="1">
+          <div class="letter-img-wrapper">
+            <Image src={testimonial2Img} alt="Canary Wharf annual gala evening" widths={[480, 800]} sizes="(max-width: 600px) 100vw, 33vw" loading="lazy" decoding="async" formats={['avif', 'webp']} />
+          </div>
+          <div class="letter-body">
+            <div class="letter-stars">★★★★★</div>
+            <p>We hired Atunbi for our annual gala. The images elevated the entire campaign that followed. Already booked for next year.</p>
+            <div class="letter-author">Sarah K., Marketing Director</div>
+            <div class="letter-source">via Bark · Canary Wharf Gala</div>
+          </div>
+        </div>
+        <div class="letter" data-reveal data-reveal-delay="2">
+          <div class="letter-img-wrapper">
+            <Image src={testimonial3Img} alt="Editorial portrait — clean natural light" widths={[480, 800]} sizes="(max-width: 600px) 100vw, 33vw" loading="lazy" decoding="async" formats={['avif', 'webp']} />
+          </div>
+          <div class="letter-body">
+            <div class="letter-stars">★★★★★</div>
+            <p>Refined, calm, brilliant. The portraits we received were the best we've ever had taken — full stop. Worth every pound.</p>
+            <div class="letter-author">Daniel M.</div>
+            <div class="letter-source">via AddToEvent · Family Portrait</div>
+          </div>
+        </div>
       </div>
     </div>
   </section>
@@ -137,7 +224,17 @@ const seo = {
 
   <section id="meet" class="meet-section">
     <div class="meet-grid">
-      <div class="meet-portrait placeholder"></div>
+      <div class="meet-portrait">
+        <Image
+          src={meetPortraitImg}
+          alt="Atunbi — London editorial photographer at a Mayfair wedding."
+          widths={[480, 800, 1200]}
+          sizes="(max-width: 900px) 100vw, 40vw"
+          loading="lazy"
+          decoding="async"
+          formats={['avif', 'webp']}
+        />
+      </div>
       <div class="meet-content">
         <div class="feature-tag">Feature · Profile</div>
         <h2>Meet <em>Atunbi.</em></h2>
@@ -164,7 +261,21 @@ const seo = {
         <div class="blog-list">
           {recentPosts.map((post) => (
             <a href={`/blog/${post.slug}`} class="blog-card">
-              <div class="blog-card-image"></div>
+              <div class="blog-card-image">
+                {post.data.heroImage && post.data.heroAlt ? (
+                  <Image
+                    src={post.data.heroImage}
+                    alt={post.data.heroAlt}
+                    widths={[480, 800, 1200]}
+                    sizes="(max-width: 600px) 100vw, (max-width: 1000px) 50vw, 33vw"
+                    loading="lazy"
+                    decoding="async"
+                    formats={['avif', 'webp']}
+                  />
+                ) : (
+                  <span class="blog-card-image-placeholder">A</span>
+                )}
+              </div>
               <div class="blog-card-meta">
                 <span class="blog-card-category">{post.data.category}</span>
                 <span class="blog-card-date">

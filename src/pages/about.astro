@@ -1,6 +1,8 @@
 ---
 import PageLayout from '@layouts/PageLayout.astro';
+import { Image } from 'astro:assets';
 import { SITE } from '@lib/site';
+import meetPortraitImg from '../assets/uploads/projects/mayfair-townhouse-wedding/hero.jpg';
 
 const breadcrumbs = [
   { name: 'Home', url: '/' },
@@ -21,7 +23,17 @@ const breadcrumbs = [
       </nav>
     </div>
     <div class="meet-grid">
-      <div class="meet-portrait placeholder"></div>
+      <div class="meet-portrait">
+        <Image
+          src={meetPortraitImg}
+          alt="Atunbi — London editorial photographer at a Mayfair wedding."
+          widths={[480, 800, 1200]}
+          sizes="(max-width: 900px) 100vw, 40vw"
+          loading="eager"
+          decoding="async"
+          formats={['avif', 'webp']}
+        />
+      </div>
       <div class="meet-content">
         <div class="feature-tag">Feature · Profile</div>
         <h1>Meet <em>Atunbi.</em></h1>
