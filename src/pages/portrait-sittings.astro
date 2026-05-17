@@ -21,12 +21,12 @@ const breadcrumbs = [
 ];
 
 const plates = [
-  { number: 'Plate I', title: 'The Sitting', category: 'Studio Light', image: platePortrait, alt: 'Editorial portrait, studio light' },
-  { number: 'Plate II', title: 'The Bride', category: 'Window Light', image: plateWedding, alt: 'Bridal portrait, soft window light' },
-  { number: 'Plate III', title: 'The Headshot', category: 'Corporate', image: plateCorporate, alt: 'Corporate headshot' },
-  { number: 'Plate IV', title: 'The Brand', category: 'On Location', image: plateBrand, alt: 'Brand portrait on location' },
-  { number: 'Plate V', title: 'The Figure', category: 'Editorial', image: plateGala, alt: 'Editorial portrait, gala setting' },
-  { number: 'Plate VI', title: 'The Story', category: 'Cultural', image: plateCultural, alt: 'Cultural portrait' },
+  { number: '01', title: 'The Sitting', category: 'Studio Light', image: platePortrait, alt: 'Editorial portrait, studio light' },
+  { number: '02', title: 'The Bride', category: 'Window Light', image: plateWedding, alt: 'Bridal portrait, soft window light' },
+  { number: '03', title: 'The Headshot', category: 'Corporate', image: plateCorporate, alt: 'Corporate headshot' },
+  { number: '04', title: 'The Brand', category: 'On Location', image: plateBrand, alt: 'Brand portrait on location' },
+  { number: '05', title: 'The Figure', category: 'Editorial', image: plateGala, alt: 'Editorial portrait, gala setting' },
+  { number: '06', title: 'The Story', category: 'Cultural', image: plateCultural, alt: 'Cultural portrait' },
 ];
 
 const faqs = [
@@ -65,14 +65,14 @@ const quotes = [
       </div>
       <figure class="cover-image">
         <Image src={platePortrait} alt="Editorial portrait sitting, studio light" widths={[600, 1000, 1600]} sizes="(min-width: 900px) 58vw, 100vw" loading="eager" />
-        <figcaption class="cover-image-caption">Plate I · Studio · 2025</figcaption>
+        <figcaption class="cover-image-caption">Studio · 2025</figcaption>
       </figure>
     </div>
   </section>
 
   <section class="plates-section lp-band lp-band--cream">
     <div class="container">
-      <div class="section-divider">Section · Plates From Sittings</div>
+      <div class="section-divider">Selected Portraits</div>
       <h2 class="section-title">Portraits, Hand <em>Finished.</em></h2>
       <div class="plates-grid" style="margin-top: 3.5rem;">
         {plates.map((p) => (

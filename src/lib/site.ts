@@ -38,11 +38,13 @@ export const SOCIAL = {
 } as const;
 
 export const NAV: Array<{ label: string; href: string }> = [
-  { label: 'Plates', href: '/portfolio' },
-  { label: 'Gallery', href: '/gallery' },
-  { label: 'Lookbook', href: '/lookbook' },
+  { label: 'Weddings', href: '/weddings' },
+  { label: 'Portraits', href: '/portrait-sittings' },
+  { label: 'Events', href: '/events' },
+  { label: 'Personal Work', href: '/gallery' },
+  { label: 'Pricing', href: '/lookbook' },
   { label: 'Journal', href: '/blog' },
-  { label: 'Atunbi', href: '/about' },
+  { label: 'About', href: '/about' },
 ];
 
 export const NAV_CTA = { label: 'Enquire', href: '/contact' };
@@ -69,8 +71,8 @@ export const SERVICES = [
   {
     slug: 'weddings',
     label: 'Weddings',
-    plate: 'Plate II',
-    eyebrow: 'Section · Plate II · Weddings',
+    plate: '02',
+    eyebrow: 'Weddings',
     headline: 'A Wedding, <em>Quietly Made.</em>',
     deck: 'Editorial wedding photography for London. Discreet on the day. Hand-finished after. From £1,200 for six hours — full-day coverage from £1,800.',
     href: '/weddings',
@@ -80,8 +82,8 @@ export const SERVICES = [
   {
     slug: 'events',
     label: 'Events',
-    plate: 'Plate III',
-    eyebrow: 'Section · Plate III · Events',
+    plate: '03',
+    eyebrow: 'Events',
     headline: 'Galas, <em>Considered.</em>',
     deck: 'Editorial documentary coverage for London galas, milestones and brand stories. From £1,200 — bespoke options for full-day or multi-room work.',
     href: '/events',
@@ -90,9 +92,9 @@ export const SERVICES = [
   },
   {
     slug: 'portrait-sittings',
-    label: 'Portrait Sittings',
-    plate: 'Plate IV',
-    eyebrow: 'Section · Plate IV · Portraits',
+    label: 'Portraits',
+    plate: '04',
+    eyebrow: 'Portraits',
     headline: 'Sittings, in <em>Light.</em>',
     deck: 'Studio or location. Two styled looks. Twenty hand-finished frames. From £450.',
     href: '/portrait-sittings',
