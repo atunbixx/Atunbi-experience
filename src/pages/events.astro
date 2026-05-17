@@ -1,122 +1,27 @@
 ---
 import PageLayout from '@layouts/PageLayout.astro';
-import PlateCard from '@components/PlateCard.astro';
-import LeadForm from '@components/LeadForm.astro';
-import WhatsAppCTA from '@components/WhatsAppCTA.astro';
-import { Image } from 'astro:assets';
-import { SITE, SERVICES } from '@lib/site';
-import '../styles/lead-gen.css';
+import SectionGallery from '@components/SectionGallery.astro';
 
-import hero from '../assets/uploads/projects/canary-wharf-gala/hero.jpg';
-import shot01 from '../assets/uploads/projects/canary-wharf-gala/01-keynote.jpg';
-import shot02 from '../assets/uploads/projects/canary-wharf-gala/02-dinner.jpg';
-import shot03 from '../assets/uploads/projects/canary-wharf-gala/03-atmosphere.jpg';
-import shot04 from '../assets/uploads/projects/canary-wharf-gala/04-portrait.jpg';
-import plateGala from '../assets/uploads/plates/04-gala.jpg';
-
-const service = SERVICES.find((s) => s.slug === 'events')!;
 const breadcrumbs = [
   { name: 'Home', url: '/' },
   { name: 'Events', url: '/events' },
 ];
 
-const plates = [
-  { number: '01', title: 'The Keynote', category: 'Canary Wharf · 2025', image: shot01, alt: 'Keynote address, low light' },
-  { number: '02', title: 'The Dinner', category: 'Service', image: shot02, alt: 'Gala dinner candid' },
-  { number: '03', title: 'The Room', category: 'Atmosphere', image: shot03, alt: 'Atmosphere wide' },
-  { number: '04', title: 'The Guest', category: 'On-Stand', image: shot04, alt: 'Guest portrait on stand' },
-  { number: '05', title: 'The Gala', category: 'Editorial', image: plateGala, alt: 'Editorial gala plate' },
-  { number: '06', title: 'The Night', category: 'Closing', image: hero, alt: 'Closing of the evening' },
-];
-
-const faqs = [
-  { q: 'How quickly is the gallery delivered?', a: 'Press-select batch within forty-eight hours where required. The full hand-finished gallery within ten working days for events under eight hours.' },
-  { q: 'Do you cover brand activations and corporate events?', a: 'Yes — the same editorial eye, applied to your brand. Recent work includes private dinners, product launches and annual galas. References available on request.' },
-  { q: 'Are you insured for venues?', a: '£5M public liability and equipment cover. Certificates sent directly to your venue or production team.' },
-  { q: 'Last-minute coverage?', a: 'We hold a small number of dates each month for short-notice work. WhatsApp is the fastest way to check availability.' },
-  { q: 'Can we license images for press or social?', a: 'Yes — commercial usage rights are available as an add-on, quoted alongside the main package.' },
-];
-
-const quotes = [
-  { quote: 'Invisible in the room and yet they captured every moment we wanted. The exact balance for a gala.', who: 'Helena C.', context: 'Canary Wharf Gala · 2025' },
-  { quote: 'Hands-off to brief, exceptional in delivery. The editorial set we now use across the year.', who: 'A London agency', context: 'Brand launch · 2025' },
-  { quote: 'The photographs made the after-event press placements far stronger than anything we had before.', who: 'M. Patel', context: 'Annual fundraiser · 2024' },
+const demo = [
+  { src: '/images/events/01.jpg', w: 2000, h: 1335, alt: 'An event in full flow, Canary Wharf' },
+  { src: '/images/events/02.jpg', w: 1600, h: 1067, alt: 'Keynote moment under stage light' },
+  { src: '/images/events/03.jpg', w: 1600, h: 1143, alt: 'Gala dinner service' },
+  { src: '/images/events/04.jpg', w: 1600, h: 1067, alt: 'The atmosphere of the evening' },
+  { src: '/images/events/05.jpg', w: 1600, h: 1067, alt: 'A guest portrait at the event' },
+  { src: '/images/events/06.jpg', w: 1600, h: 1068, alt: 'Editorial gala photograph' },
 ];
 ---
 <PageLayout
   title="Editorial London Event & Gala Photography"
-  description="Editorial documentary coverage for London galas, milestones and brand stories. Discreet, fast-delivery photography from £1,200."
-  keywords={['gala photographer London', 'event photographer London', 'corporate event photographer London', 'brand launch photographer']}
+  description="Editorial documentary coverage for London galas, milestones and brand events. A selection of recent event work."
+  keywords={['gala photographer London', 'event photographer London', 'corporate event photographer London', 'brand event photographer']}
   jsonLdType="page"
   breadcrumbs={breadcrumbs}
 >
-  <section class="cover">
-    <div class="cover-grid">
-      <div class="cover-text">
-        <div class="plate">{service.eyebrow}</div>
-        <h1>Galas,<br /><em>Considered.</em></h1>
-        <p class="deck">Editorial documentary coverage for London galas, brand stories and milestone moments. From £1,200 — bespoke for full-day or multi-room work.</p>
-        <div class="cover-byline">By Atunbi · London Studio · Est. {SITE.established}</div>
-        <div class="cover-ctas lp-hero-ctas">
-          <a href="#enquire" class="btn btn-burgundy">Begin The Conversation</a>
-          <WhatsAppCTA prefill={service.waPrefill} source="events-hero" variant="wa" label="WhatsApp" />
-        </div>
-        <p class="lp-hero-aside">Prefer to browse first? <a href="/lookbook">See the Lookbook →</a></p>
-      </div>
-      <figure class="cover-image">
-        <Image src={hero} alt="Canary Wharf gala — keynote moment" widths={[600, 1000, 1600]} sizes="(min-width: 900px) 58vw, 100vw" loading="eager" />
-        <figcaption class="cover-image-caption">Canary Wharf · 2025</figcaption>
-      </figure>
-    </div>
-  </section>
-
-  <section class="plates-section lp-band lp-band--cream">
-    <div class="container">
-      <div class="section-divider">Selected Events</div>
-      <h2 class="section-title">Coverage, in <em>Any Room.</em></h2>
-      <div class="plates-grid" style="margin-top: 3.5rem;">
-        {plates.map((p) => (
-          <PlateCard number={p.number} title={p.title} category={p.category} href="/portfolio/canary-wharf-gala" image={p.image} alt={p.alt} />
-        ))}
-      </div>
-    </div>
-  </section>
-
-  <section class="lp-band lp-band--ink">
-    <div class="container">
-      <div class="section-divider">Section · In Their Words</div>
-      <h2 class="section-title">Hosts Who Trusted <em>The Night.</em></h2>
-      <div class="lp-quotes">
-        {quotes.map((t) => (
-          <figure class="lp-quote">
-            <span class="lp-quote-mark">&#8220;</span>
-            <blockquote>{t.quote}</blockquote>
-            <figcaption><span class="who">{t.who}</span><br />{t.context}</figcaption>
-          </figure>
-        ))}
-      </div>
-    </div>
-  </section>
-
-  <section class="lp-band lp-band--paper">
-    <div class="container">
-      <div class="section-divider">Section · Frequently Asked</div>
-      <h2 class="section-title">Practical Notes, <em>Plainly Said.</em></h2>
-      <div class="lp-faq">
-        {faqs.map((f) => (
-          <details>
-            <summary>{f.q}<span class="mark">+</span></summary>
-            <div class="lp-faq-answer">{f.a}</div>
-          </details>
-        ))}
-      </div>
-    </div>
-  </section>
-
-  <LeadForm
-    service="events"
-    eventType="gala"
-    title="Tell Us About The Evening."
-    subtitle="Date, room, scale, and what you'd like to remember of it. We'll come back within twenty-four hours."
-  />
+  <SectionGallery section="events" srTitle="Editorial Event Photography in London" fallback={demo} />
 </PageLayout>

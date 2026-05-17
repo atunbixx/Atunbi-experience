@@ -1,0 +1,65 @@
+---
+import { readManifest, itemsForSection, publicUrl, type GallerySection } from '@lib/r2';
+import { WHATSAPP } from '@lib/site';
+
+interface DemoPhoto { src: string; w: number; h: number; alt: string }
+
+interface Props {
+  section: GallerySection;
+  /** Visually-hidden H1 — required by the site SEO gate; no visible heading. */
+  srTitle: string;
+  /** Static /public demo photos shown until real images are uploaded to this section. */
+  fallback?: DemoPhoto[];
+}
+
+const { section, srTitle, fallback = [] } = Astro.props;
+
+const manifest = await readManifest();
+const live = itemsForSection(manifest.items, section);
+
+const photos: DemoPhoto[] = live.length
+  ? live.map((it) => ({
+      src: publicUrl(it.key),
+      w: it.width ?? 1600,
+      h: it.height ?? 1067,
+      alt: it.alt,
+    }))
+  : fallback;
+
+// Same CTA targets the rest of the site uses.
+const enquireHref = '/contact';
+const whatsappHref = WHATSAPP.number ? `https://wa.me/${WHATSAPP.number}` : '/contact';
+---
+<section class="gallery-band" aria-label={srTitle}>
+  <h1 class="sr-only">{srTitle}</h1>
+
+  {photos.length === 0 ? (
+    <p style="text-align:center; font-style:italic; color:var(--ink-soft); padding:80px 0; font-family:'Fraunces',serif; font-size:1.1rem;">
+      This collection is being prepared.
+    </p>
+  ) : (
+    <div class="gallery-grid">
+      {photos.map((p) => (
+        <figure class="gallery-item">
+          <img
+            src={p.src}
+            alt={p.alt}
+            width={p.w}
+            height={p.h}
+            loading="lazy"
+            decoding="async"
+          />
+        </figure>
+      ))}
+    </div>
+  )}
+
+  <div class="gallery-cta">
+    <a class="btn btn--primary" href={enquireHref}>
+      Begin the Conversation
+    </a>
+    <a class="btn btn--ghost" href={whatsappHref} rel="noopener">
+      WhatsApp
+    </a>
+  </div>
+</section>

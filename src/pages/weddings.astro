@@ -1,23 +1,15 @@
 ---
 import PageLayout from '@layouts/PageLayout.astro';
-import { WHATSAPP } from '@lib/site';
+import SectionGallery from '@components/SectionGallery.astro';
 
 const breadcrumbs = [
   { name: 'Home', url: '/' },
   { name: 'Weddings', url: '/weddings' },
 ];
 
-// CTA targets reuse what the rest of the site uses: the enquiry route is
-// /contact (the site-wide "Enquire" destination); WhatsApp uses the same
-// configured number as every other WhatsApp CTA, falling back to /contact
-// if no number is set so the button is never broken.
-const enquireHref = '/contact';
-const whatsappHref = WHATSAPP.number ? `https://wa.me/${WHATSAPP.number}` : '/contact';
-
-// Static wedding gallery. Photos live in /public/images/weddings — adding a
-// new <figure> with its real width/height is all that's needed for a new
-// photo (no imports, no per-image CSS). Mix portrait and landscape freely.
-const photos = [
+// Demo fallback — shown until photos are uploaded to the "weddings" section
+// via /admin/gallery. Real pixel dimensions; auto-replaced on first upload.
+const demo = [
   { src: '/images/weddings/01.jpg', w: 2000, h: 1333, alt: "A couple's first look, Mayfair townhouse wedding" },
   { src: '/images/weddings/02.jpg', w: 1600, h: 1068, alt: 'Wedding couple portrait at golden hour' },
   { src: '/images/weddings/03.jpg', w: 1600, h: 1068, alt: 'Wedding ceremony at a Mayfair townhouse' },
@@ -34,30 +26,5 @@ const photos = [
   jsonLdType="page"
   breadcrumbs={breadcrumbs}
 >
-  <section class="gallery-band" aria-label="Selected weddings">
-    <h1 class="sr-only">Editorial Wedding Photography in London</h1>
-    <div class="gallery-grid">
-      {photos.map((p) => (
-        <figure class="gallery-item">
-          <img
-            src={p.src}
-            alt={p.alt}
-            width={p.w}
-            height={p.h}
-            loading="lazy"
-            decoding="async"
-          />
-        </figure>
-      ))}
-    </div>
-
-    <div class="gallery-cta">
-      <a class="btn btn--primary" href={enquireHref}>
-        Begin the Conversation
-      </a>
-      <a class="btn btn--ghost" href={whatsappHref} rel="noopener">
-        WhatsApp
-      </a>
-    </div>
-  </section>
+  <SectionGallery section="weddings" srTitle="Editorial Wedding Photography in London" fallback={demo} />
 </PageLayout>

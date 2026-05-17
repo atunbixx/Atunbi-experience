@@ -1,11 +1,12 @@
 import type { APIRoute } from 'astro';
 // fix: ensure triggerRebuild fires on every patch
-import { readManifest, writeManifest, triggerRebuild, r2Configured } from '@lib/r2';
+import { readManifest, writeManifest, triggerRebuild, r2Configured, isSection } from '@lib/r2';
 
 export const prerender = false;
 
 type Patch = {
   key?: string;
+  section?: string;
   alt?: string;
   caption?: string;
   description?: string;
@@ -46,6 +47,7 @@ export const POST: APIRoute = async ({ request }) => {
   const cur = manifest.items[idx]!;
   manifest.items[idx] = {
     ...cur,
+    section: isSection(p.section) ? p.section : cur.section,
     alt: p.alt?.trim() ?? cur.alt,
     caption: p.caption?.trim() || undefined,
     description: p.description?.trim() || undefined,

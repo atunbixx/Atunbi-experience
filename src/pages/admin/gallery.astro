@@ -25,6 +25,23 @@ const projectOptions = ['', 'Weddings', 'Galas', 'Portraits', 'Corporate', 'Cult
       </div>
 
       <!-- Upload -->
+      <div style="display:flex; gap:1rem; align-items:center; flex-wrap:wrap; margin-bottom:1rem;">
+        <label for="section-select" style="font-family:'JetBrains Mono',monospace; font-size:0.66rem; letter-spacing:0.2em; text-transform:uppercase; color:var(--burgundy);">Upload to section</label>
+        <select id="section-select" style="padding:0.5rem 0.8rem; border:1px solid var(--ink); background:var(--paper); font-family:'Fraunces',serif;">
+          <option value="weddings">Weddings → /weddings</option>
+          <option value="portraits">Portraits → /portrait-sittings</option>
+          <option value="events">Events → /events</option>
+          <option value="personal-work" selected>Personal Work → /gallery</option>
+        </select>
+        <label for="section-filter" style="margin-left:auto; font-family:'JetBrains Mono',monospace; font-size:0.66rem; letter-spacing:0.2em; text-transform:uppercase; color:var(--burgundy);">View</label>
+        <select id="section-filter" style="padding:0.5rem 0.8rem; border:1px solid var(--ink); background:var(--paper); font-family:'Fraunces',serif;">
+          <option value="">All sections</option>
+          <option value="weddings">Weddings</option>
+          <option value="portraits">Portraits</option>
+          <option value="events">Events</option>
+          <option value="personal-work">Personal Work</option>
+        </select>
+      </div>
       <div id="dropzone" style="border:1px dashed var(--rule); padding:2rem 1.5rem; text-align:center; cursor:pointer; background:var(--paper);">
         <p style="font-family:'Fraunces',serif; font-style:italic; font-size:1.1rem; color:var(--ink-soft);">Drag photos or a folder here, or choose below</p>
         <div style="margin-top:1rem; display:flex; gap:0.8rem; justify-content:center; flex-wrap:wrap;">
@@ -65,11 +82,17 @@ const projectOptions = ['', 'Weddings', 'Galas', 'Portraits', 'Corporate', 'Cult
       return json;
     }
 
+    function visible() {
+      const f = $('section-filter').value;
+      return f ? items.filter(x => (x.section || 'personal-work') === f) : items;
+    }
+    $('section-filter').addEventListener('change', () => { renderGrid(); renderPreview(); });
+
     function renderPreview() {
       const layout = layoutSel.value;
       preview.className = 'gallery gallery--' + layout;
       preview.innerHTML = '';
-      items.forEach((it) => {
+      visible().forEach((it) => {
         const ar = (it.width && it.height) ? (it.width / it.height) : 1;
         const a = document.createElement('a');
         a.style.setProperty('--ar', ar.toFixed(4));
@@ -87,11 +110,17 @@ const projectOptions = ['', 'Weddings', 'Galas', 'Portraits', 'Corporate', 'Cult
       el.dataset.key = it.key;
       el.style.cssText = 'border:1px solid var(--rule); background:var(--paper); padding:0.8rem;';
       const opts = projectOptions.map((p) => `<option value="${p}" ${p === (it.project||'') ? 'selected':''}>${p || '— none —'}</option>`).join('');
+      const secs = [['weddings','Weddings'],['portraits','Portraits'],['events','Events'],['personal-work','Personal Work']];
+      const curSec = it.section || 'personal-work';
+      const secOpts = secs.map(([v,l]) => `<option value="${v}" ${v===curSec?'selected':''}>${l}</option>`).join('');
       el.innerHTML = `
         <div style="position:relative;">
           <img src="${it.url}" alt="" style="width:100%; aspect-ratio:1; object-fit:cover; display:block; background:var(--paper-warm);" />
           <span style="position:absolute; top:6px; left:6px; background:var(--ink); color:var(--paper); font-family:'JetBrains Mono',monospace; font-size:0.6rem; padding:2px 6px;">#${idx + 1}</span>
+          <span style="position:absolute; top:6px; right:6px; background:var(--burgundy); color:var(--paper); font-family:'JetBrains Mono',monospace; font-size:0.55rem; letter-spacing:0.1em; text-transform:uppercase; padding:2px 6px;">${(it.section||'personal-work').replace('-',' ')}</span>
         </div>
+        <label style="display:block; font-size:0.6rem; letter-spacing:0.15em; text-transform:uppercase; color:var(--burgundy); margin:0.7rem 0 0.2rem; font-family:'JetBrains Mono',monospace;">Section</label>
+        <select class="gm-section" style="width:100%; padding:0.4rem; border:1px solid var(--rule); font-family:'Fraunces',serif;">${secOpts}</select>
         <label style="display:block; font-size:0.6rem; letter-spacing:0.15em; text-transform:uppercase; color:var(--burgundy); margin:0.7rem 0 0.2rem; font-family:'JetBrains Mono',monospace;">Alt (required)</label>
         <input class="gm-alt" value="${(it.alt||'').replace(/"/g,'&quot;')}" maxlength="160" style="width:100%; padding:0.4rem; border:1px solid var(--rule); font-family:'Fraunces',serif;" />
         <input class="gm-caption" placeholder="Caption" value="${(it.caption||'').replace(/"/g,'&quot;')}" style="width:100%; margin-top:0.4rem; padding:0.4rem; border:1px solid var(--rule); font-family:'Fraunces',serif;" />
@@ -108,6 +137,7 @@ const projectOptions = ['', 'Weddings', 'Galas', 'Portraits', 'Corporate', 'Cult
         try {
           await api('/api/gallery/update', { method:'POST', headers:{'content-type':'application/json'}, body: JSON.stringify({
             key: it.key,
+            section: el.querySelector('.gm-section').value,
             alt: el.querySelector('.gm-alt').value,
             caption: el.querySelector('.gm-caption').value,
             tags: el.querySelector('.gm-tags').value.split(',').map(s=>s.trim()).filter(Boolean),
@@ -144,8 +174,9 @@ const projectOptions = ['', 'Weddings', 'Galas', 'Portraits', 'Corporate', 'Cult
 
     function renderGrid() {
       grid.innerHTML = '';
-      items.forEach((it, i) => grid.appendChild(card(it, i)));
-      countEl.textContent = '(' + items.length + ')';
+      const vis = visible();
+      vis.forEach((it, i) => grid.appendChild(card(it, i)));
+      countEl.textContent = '(' + vis.length + (vis.length !== items.length ? ' of ' + items.length : '') + ')';
     }
 
     async function load() {
@@ -211,18 +242,21 @@ const projectOptions = ['', 'Weddings', 'Galas', 'Portraits', 'Corporate', 'Cult
         }
       }
       publishBtn.disabled = true; upStatus.textContent = 'Uploading…';
+      const section = document.getElementById('section-select').value;
       const done = [];
       for (const rec of pending) {
         const st = rec.row.querySelector('.u-state');
         try {
           st.textContent = 'Signing…';
-          const folder = rec.rel.includes('/') ? 'gallery/' + rec.rel.split('/').slice(0, -1).join('/') : 'gallery';
+          // Route into gallery/<section>/ (preserving any sub-folder from a folder upload).
+          const sub = rec.rel.includes('/') ? '/' + rec.rel.split('/').slice(0, -1).join('/') : '';
+          const folder = 'gallery/' + section + sub;
           const p = await api('/api/upload/presign', { method:'POST', headers:{'content-type':'application/json'}, body: JSON.stringify({ filename: rec.file.name, contentType: rec.file.type, folder })});
           st.textContent = 'Uploading…';
           const put = await fetch(p.uploadUrl, { method:'PUT', headers:{'content-type':rec.file.type}, body: rec.file });
           if (!put.ok) throw new Error('R2 ' + put.status);
           rec.key = p.key; st.textContent = 'Uploaded ✓';
-          done.push({ key: p.key, width: rec.width, height: rec.height, alt: rec.row.querySelector('.u-alt').value.trim() });
+          done.push({ key: p.key, section, width: rec.width, height: rec.height, alt: rec.row.querySelector('.u-alt').value.trim() });
         } catch (e) { st.textContent = 'Error: ' + e.message; }
       }
       if (done.length) {

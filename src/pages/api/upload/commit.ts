@@ -1,10 +1,20 @@
 import type { APIRoute } from 'astro';
-import { readManifest, writeManifest, triggerRebuild, r2Configured, type GalleryEntry } from '@lib/r2';
+import {
+  readManifest,
+  writeManifest,
+  triggerRebuild,
+  r2Configured,
+  isSection,
+  DEFAULT_SECTION,
+  type GalleryEntry,
+  type GallerySection,
+} from '@lib/r2';
 
 export const prerender = false;
 
 type Incoming = {
   key?: string;
+  section?: string;
   alt?: string;
   caption?: string;
   description?: string;
@@ -47,8 +57,12 @@ export const POST: APIRoute = async ({ request }) => {
 
   for (const it of items) {
     const prev = existing.get(it.key!);
+    const section: GallerySection = isSection(it.section)
+      ? it.section
+      : prev?.section ?? DEFAULT_SECTION;
     const entry: GalleryEntry = {
       key: it.key!,
+      section,
       alt: it.alt!.trim(),
       caption: it.caption?.trim() || undefined,
       description: it.description?.trim() || undefined,
@@ -62,7 +76,11 @@ export const POST: APIRoute = async ({ request }) => {
     existing.set(it.key!, entry);
   }
 
-  const next = { items: [...existing.values()].sort((a, b) => a.order - b.order) };
+  // Preserve manifest.settings (was previously dropped on every commit).
+  const next = {
+    ...manifest,
+    items: [...existing.values()].sort((a, b) => a.order - b.order),
+  };
   await writeManifest(next);
   await triggerRebuild();
 
