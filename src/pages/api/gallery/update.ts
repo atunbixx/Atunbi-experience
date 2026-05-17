@@ -1,4 +1,5 @@
 import type { APIRoute } from 'astro';
+// fix: ensure triggerRebuild fires on every patch
 import { readManifest, writeManifest, triggerRebuild, r2Configured } from '@lib/r2';
 
 export const prerender = false;
