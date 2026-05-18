@@ -1,10 +1,64 @@
 ---
-/**
- * Astro client island: loads the lightbox + reveal + fade-in script lazily.
- * Drop this once on any page that has a gallery, project grid, or reveal.
- * Ships the smallest possible JS payload, deferred and out of the critical path.
- */
+// PhotoSwipe v5 lightbox bound to the #grid figures. White bg, hash routing
+// (#i-{index}), keyboard, swipe, preload — all from the one dependency.
 ---
 <script>
-  import('../lib/lightbox');
+  import PhotoSwipeLightbox from 'photoswipe/lightbox';
+  import 'photoswipe/style.css';
+
+  const grid = document.getElementById('grid');
+  if (grid) {
+    const cells = Array.from(grid.querySelectorAll<HTMLElement>('.cell'));
+    const dataSource = cells.map((c) => ({
+      src: c.dataset.pswpSrc!,
+      width: Number(c.dataset.pswpW),
+      height: Number(c.dataset.pswpH),
+      alt: c.dataset.pswpAlt || '',
+    }));
+
+    const lightbox = new PhotoSwipeLightbox({
+      dataSource,
+      pswpModule: () => import('photoswipe'),
+      bgOpacity: 1,
+      paddingFn: () => {
+        const v = Math.round(Math.min(window.innerWidth, window.innerHeight) * 0.05);
+        return { top: v, bottom: v, left: v, right: v };
+      },
+      preload: [1, 1],
+    });
+
+    // White background to match the reference.
+    lightbox.on('uiRegister', () => {
+      const root = lightbox.pswp?.element;
+      if (root) {
+        const bg = root.querySelector<HTMLElement>('.pswp__bg');
+        if (bg) bg.style.background = '#ffffff';
+      }
+    });
+
+    cells.forEach((c, i) => {
+      c.addEventListener('click', () => lightbox.loadAndOpen(i));
+    });
+
+    // Shareable hash + working back button.
+    lightbox.on('change', () => {
+      const i = lightbox.pswp?.currIndex ?? 0;
+      history.replaceState(null, '', `#i-${i}`);
+    });
+    lightbox.on('close', () => {
+      history.replaceState(null, '', location.pathname + location.search);
+    });
+
+    lightbox.init();
+
+    const openFromHash = () => {
+      const m = location.hash.match(/^#i-(\d+)$/);
+      if (m) {
+        const idx = Math.min(Number(m[1]), dataSource.length - 1);
+        if (!lightbox.pswp) lightbox.loadAndOpen(idx);
+      }
+    };
+    window.addEventListener('hashchange', openFromHash);
+    openFromHash();
+  }
 </script>

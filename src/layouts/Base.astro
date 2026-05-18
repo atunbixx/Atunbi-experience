@@ -1,0 +1,122 @@
+---
+import { getGalleries } from '@lib/manifest';
+import '../styles/global.css';
+
+interface Props {
+  title: string;
+  description?: string;
+  ogImage?: string;
+  canonicalPath: string;
+}
+
+const { title, description, ogImage, canonicalPath } = Astro.props;
+const galleries = await getGalleries();
+const site = import.meta.env.SITE_URL ?? 'https://classic.theatunbiexperience.com';
+const canonical = new URL(canonicalPath, site).toString();
+const desc = description ?? 'The Atunbi Experience — editorial photography portfolio.';
+const plausible = import.meta.env.PLAUSIBLE_DOMAIN;
+const here = Astro.url.pathname.replace(/\/$/, '') || '/';
+---
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>{title}</title>
+  <meta name="description" content={desc} />
+  <link rel="canonical" href={canonical} />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content={title} />
+  <meta property="og:description" content={desc} />
+  <meta property="og:url" content={canonical} />
+  {ogImage && <meta property="og:image" content={ogImage} />}
+  <meta name="twitter:card" content={ogImage ? 'summary_large_image' : 'summary'} />
+  {ogImage && <meta name="twitter:image" content={ogImage} />}
+  <link rel="icon" href="/logo.svg" type="image/svg+xml" />
+  {plausible && (
+    <script defer is:inline data-domain={plausible} src="https://plausible.io/js/script.js"></script>
+  )}
+</head>
+<body>
+  <header class="site-header">
+    <nav class="wrap nav" aria-label="Primary">
+      <div class="dd desktop-only">
+        <button aria-haspopup="true" aria-expanded="false" class="dd-btn">PORTFOLIO ▾</button>
+        <div class="dd-menu" role="menu">
+          {galleries.map((g) => (
+            <a role="menuitem" href={`/${g.slug}`} aria-current={here === `/${g.slug}` ? 'page' : undefined}>{g.title}</a>
+          ))}
+        </div>
+      </div>
+      <a class="desktop-only" href="/resume" aria-current={here === '/resume' ? 'page' : undefined}>RESUME</a>
+      <a class="desktop-only" href="/motion" aria-current={here === '/motion' ? 'page' : undefined}>MOTION</a>
+      <a class="desktop-only" href="/contact" aria-current={here === '/contact' ? 'page' : undefined}>CONTACT</a>
+      <a class="desktop-only" href="https://instagram.com/atunbi" rel="noopener" aria-label="Instagram">
+        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.2c3.2 0 3.6 0 4.9.1 1.2.1 1.8.3 2.2.4.6.2 1 .5 1.4.9.4.4.7.8.9 1.4.2.4.4 1 .4 2.2.1 1.3.1 1.7.1 4.9s0 3.6-.1 4.9c-.1 1.2-.3 1.8-.4 2.2-.2.6-.5 1-.9 1.4-.4.4-.8.7-1.4.9-.4.2-1 .4-2.2.4-1.3.1-1.7.1-4.9.1s-3.6 0-4.9-.1c-1.2-.1-1.8-.3-2.2-.4-.6-.2-1-.5-1.4-.9-.4-.4-.7-.8-.9-1.4-.2-.4-.4-1-.4-2.2C2.2 15.6 2.2 15.2 2.2 12s0-3.6.1-4.9c.1-1.2.3-1.8.4-2.2.2-.6.5-1 .9-1.4.4-.4.8-.7 1.4-.9.4-.2 1-.4 2.2-.4C8.4 2.2 8.8 2.2 12 2.2zm0 1.8c-3.1 0-3.5 0-4.7.1-1.1.1-1.7.2-2.1.4-.5.2-.9.4-1.2.8-.4.3-.6.7-.8 1.2-.2.4-.3 1-.4 2.1C2.9 9.8 2.9 10.2 2.9 12s0 2.2.1 3.4c.1 1.1.2 1.7.4 2.1.2.5.4.9.8 1.2.3.4.7.6 1.2.8.4.2 1 .3 2.1.4 1.2.1 1.6.1 4.7.1s3.5 0 4.7-.1c1.1-.1 1.7-.2 2.1-.4.5-.2.9-.4 1.2-.8.4-.3.6-.7.8-1.2.2-.4.3-1 .4-2.1.1-1.2.1-1.6.1-3.4s0-2.2-.1-3.4c-.1-1.1-.2-1.7-.4-2.1-.2-.5-.4-.9-.8-1.2-.3-.4-.7-.6-1.2-.8-.4-.2-1-.3-2.1-.4-1.2-.1-1.6-.1-4.7-.1zm0 3.1a4.9 4.9 0 110 9.8 4.9 4.9 0 010-9.8zm0 8a3.1 3.1 0 100-6.2 3.1 3.1 0 000 6.2zm6.2-8.2a1.1 1.1 0 11-2.3 0 1.1 1.1 0 012.3 0z"/></svg>
+      </a>
+      <a class="desktop-only" href="https://facebook.com/atunbi" rel="noopener" aria-label="Facebook">
+        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M13.5 21v-8h2.7l.4-3.1h-3.1V7.9c0-.9.3-1.5 1.6-1.5h1.6V3.6c-.3 0-1.3-.1-2.4-.1-2.4 0-4 1.5-4 4.1v2.3H8v3.1h2.3V21h3.2z"/></svg>
+      </a>
+      <a class="desktop-only" href="https://www.linkedin.com/in/atunbi" rel="noopener" aria-label="LinkedIn">
+        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6.9 8.6H3.7V21h3.2V8.6zM5.3 3.5a1.9 1.9 0 100 3.8 1.9 1.9 0 000-3.8zM21 21v-6.8c0-3.3-1.8-4.8-4.1-4.8-1.9 0-2.7 1-3.2 1.8h-.1V8.6H10.4c.1.9 0 12.4 0 12.4h3.2v-6.9c0-.3 0-.6.1-.9.2-.6.8-1.3 1.8-1.3 1.3 0 1.9 1 1.9 2.5V21H21z"/></svg>
+      </a>
+      <button class="desktop-only" type="button" id="share-btn">Share</button>
+      <button class="burger" id="burger" aria-label="Open menu" aria-expanded="false">☰</button>
+    </nav>
+
+    <div class="logo-wrap">
+      <a href="/" aria-label="The Atunbi Experience — home">
+        <img src="/logo.svg" alt="The Atunbi Experience" width="200" height="48" />
+      </a>
+    </div>
+  </header>
+
+  <main class="wrap" id="main">
+    <slot />
+  </main>
+
+  <footer class="site-footer">© The Atunbi Experience</footer>
+
+  <div class="mobile-menu" id="mobile-menu" data-open="false">
+    <button class="mm-close" id="mm-close" aria-label="Close menu">✕</button>
+    {galleries.map((g) => <a href={`/${g.slug}`}>{g.title}</a>)}
+    <a href="/resume">Resume</a>
+    <a href="/motion">Motion</a>
+    <a href="/contact">Contact</a>
+  </div>
+
+  <script is:inline>
+    (() => {
+      const burger = document.getElementById('burger');
+      const menu = document.getElementById('mobile-menu');
+      const close = document.getElementById('mm-close');
+      const setOpen = (o) => {
+        if (!menu || !burger) return;
+        menu.dataset.open = String(o);
+        burger.setAttribute('aria-expanded', String(o));
+        document.body.style.overflow = o ? 'hidden' : '';
+      };
+      burger && burger.addEventListener('click', () => setOpen(true));
+      close && close.addEventListener('click', () => setOpen(false));
+      menu && menu.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => setOpen(false)));
+      document.addEventListener('keydown', (e) => { if (e.key === 'Escape') setOpen(false); });
+
+      const dd = document.querySelector('.dd');
+      const ddBtn = document.querySelector('.dd-btn');
+      ddBtn && ddBtn.addEventListener('click', () => {
+        const open = dd.getAttribute('aria-expanded') === 'true';
+        dd.setAttribute('aria-expanded', String(!open));
+      });
+
+      const share = document.getElementById('share-btn');
+      share && share.addEventListener('click', async () => {
+        const data = { title: document.title, url: location.href };
+        try {
+          if (navigator.share) await navigator.share(data);
+          else { await navigator.clipboard.writeText(location.href); share.textContent = 'Link copied'; }
+        } catch {}
+      });
+    })();
+  </script>
+</body>
+</html>

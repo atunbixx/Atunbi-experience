@@ -1,0 +1,23 @@
+---
+import Base from '@layouts/Base.astro';
+import Grid from '@components/Grid.astro';
+import Lightbox from '@components/Lightbox.astro';
+import { getGalleries } from '@lib/manifest';
+
+export async function getStaticPaths() {
+  const galleries = await getGalleries();
+  return galleries.map((g) => ({ params: { slug: g.slug }, props: { gallery: g } }));
+}
+
+const { gallery } = Astro.props;
+const ogImage = gallery.photos[0]?.url;
+---
+<Base
+  title={`${gallery.title} — The Atunbi Experience`}
+  description={`${gallery.title} — editorial photography by The Atunbi Experience.`}
+  ogImage={ogImage}
+  canonicalPath={`/${gallery.slug}`}
+>
+  <Grid photos={gallery.photos} />
+  <Lightbox />
+</Base>

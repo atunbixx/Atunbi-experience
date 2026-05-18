@@ -1,44 +1,17 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
-import sitemap from '@astrojs/sitemap';
-import mdx from '@astrojs/mdx';
-import react from '@astrojs/react';
-import vercel from '@astrojs/vercel';
-import keystatic from '@keystatic/astro';
-import { keywordLinker } from './src/lib/keyword-linker.mjs';
 
-const SITE_URL = process.env.SITE_URL ?? 'https://www.theatunbiexperience.com';
+const SITE = process.env.SITE_URL ?? 'https://classic.theatunbiexperience.com';
 
-// https://astro.build/config
+// Static site. Cloudflare Pages serves dist/ + the /functions directory
+// (the contact endpoint) automatically — no SSR adapter needed.
 export default defineConfig({
-  site: SITE_URL,
+  site: SITE,
   output: 'static',
-  adapter: vercel({
-    imageService: true,
-    webAnalytics: { enabled: true },
-  }),
-  integrations: [
-    react(),
-    keystatic(),
-    mdx(),
-    sitemap({
-      filter: (page) =>
-        !page.includes('/keystatic') &&
-        !page.includes('/admin') &&
-        !page.includes('/api/'),
-      changefreq: 'weekly',
-      priority: 0.7,
-    }),
-  ],
-  markdown: {
-    remarkPlugins: [keywordLinker()],
-    shikiConfig: {
-      theme: 'github-light',
-      wrap: true,
-    },
+  image: {
+    // R2 originals are fetched + resized at build time (Sharp). No Cloudflare
+    // Images / cdn-cgi needed; output is fully static and host-agnostic.
+    domains: ['assets.theatunbiexperience.com'],
   },
-  prefetch: { prefetchAll: true, defaultStrategy: 'viewport' },
-  vite: {
-    ssr: { noExternal: ['@keystatic/*'] },
-  },
+  devToolbar: { enabled: false },
 });

@@ -1,0 +1,25 @@
+---
+import Base from '@layouts/Base.astro';
+
+// Replace with the real reel ID. Vimeo by default; swap the src for YouTube
+// (https://www.youtube.com/embed/VIDEO_ID) if preferred. Documented in README.
+const REEL_SRC =
+  import.meta.env.MOTION_EMBED_URL ?? 'https://player.vimeo.com/video/76979871';
+---
+<Base
+  title="Motion — The Atunbi Experience"
+  description="Motion reel — The Atunbi Experience."
+  canonicalPath="/motion"
+>
+  <div class="reel">
+    <div class="frame">
+      <iframe
+        src={REEL_SRC}
+        title="The Atunbi Experience — motion reel"
+        loading="lazy"
+        allow="autoplay; fullscreen; picture-in-picture"
+        allowfullscreen
+      ></iframe>
+    </div>
+  </div>
+</Base>

@@ -1,0 +1,60 @@
+---
+import { Image, getImage } from 'astro:assets';
+import type { Photo } from '@lib/manifest';
+
+interface Props {
+  photos: Photo[];
+}
+const { photos } = Astro.props;
+
+// Build-time: a large optimised variant per photo for the lightbox.
+const large = await Promise.all(
+  photos.map((p) =>
+    getImage({
+      src: p.url,
+      width: Math.min(p.width, 1800),
+      height: Math.round(Math.min(p.width, 1800) * (p.height / p.width)),
+      format: 'webp',
+      inferSize: false,
+    })
+  )
+);
+---
+<div class="grid" id="grid">
+  {photos.map((p, i) => (
+    <figure
+      class="cell"
+      data-pswp-src={large[i]!.src}
+      data-pswp-w={large[i]!.attributes.width}
+      data-pswp-h={large[i]!.attributes.height}
+      data-pswp-alt={p.alt}
+    >
+      <div class="ph" style={`aspect-ratio:${p.width} / ${p.height};`}>
+        <Image
+          src={p.url}
+          alt={p.alt}
+          width={p.width}
+          height={p.height}
+          widths={[400, 800, 1200, 1800]}
+          sizes="(max-width: 639px) 100vw, (max-width: 1023px) 50vw, 33vw"
+          format="webp"
+          quality={82}
+          loading="lazy"
+          decoding="async"
+          onload="this.classList.add('is-loaded')"
+        />
+      </div>
+    </figure>
+  ))}
+</div>
+
+<script>
+  // Soft deterrent only (documented): block context menu / drag on photos.
+  document.querySelectorAll('#grid img').forEach((img) => {
+    img.addEventListener('contextmenu', (e) => e.preventDefault());
+    img.addEventListener('dragstart', (e) => e.preventDefault());
+    // Catch images already complete before the inline onload fired.
+    const el = img as HTMLImageElement;
+    if (el.complete) el.classList.add('is-loaded');
+  });
+</script>

@@ -1,115 +1,69 @@
-# The Atunbi Experience
+# classic-tatu
 
-Editorial photography studio — London. Built with **Astro**, **Keystatic CMS**, deployed on **Vercel**.
+Minimalist, editorial portfolio for **classic.theatunbiexperience.com** — a
+Format-style site (reference: susanzey.com) built on Astro, served fully
+static, consuming the **public R2 gallery manifest** that the main
+theatunbiexperience.com admin already publishes. No API, no CMS, no secrets.
 
-This is the codebase. For an architectural overview and original design intent see [PLAN.md](./PLAN.md).
+## Local dev
 
----
-
-## Quick start
-
-```bash
-npm install
-npm run dev          # http://localhost:4321
+```sh
+pnpm install
+pnpm dev          # http://localhost:4321
+pnpm build        # static output → dist/
+pnpm preview      # serve the build locally
 ```
 
-Open `/` for the public site, `/keystatic` for the admin CMS, `/admin/seo` for the SEO audit dashboard (after a build).
+The build fetches `https://assets.theatunbiexperience.com/gallery/manifest.json`
+once and statically generates every page. Images are the R2 originals,
+**resized at build time by Astro/Sharp** into 400/800/1200/1800 WebP — no
+Cloudflare Images needed.
 
-## Scripts
+## Environment variables
 
-| Script | What it does |
-|---|---|
-| `npm run dev` | Start the Astro dev server with hot reload. |
-| `npm run build` | Production build **and** run the SEO audit. Fails on SEO errors. |
-| `npm run build:no-audit` | Production build without the SEO gate (use sparingly). |
-| `npm run preview` | Preview the production build locally. |
-| `npm run seo:check` | Re-run the SEO audit against an existing `dist/` build. |
+Copy `.env.example`. None are required for the gallery (the manifest is
+public). For the contact form, set these **in the Cloudflare Pages dashboard**
+(never commit):
 
-## Project layout
+| Var | Where | Purpose |
+|---|---|---|
+| `SITE_URL` | Build | Canonical/OG base. Default `https://classic.theatunbiexperience.com` |
+| `GALLERY_MANIFEST_URL` | Build | Override only if the manifest URL moves |
+| `RESEND_API_KEY` | Function (secret) | Sends the contact email |
+| `CONTACT_TO_EMAIL` | Function | Destination inbox (e.g. `hello@atunbi.com`) |
+| `MOTION_EMBED_URL` | Build | Reel iframe src (Vimeo/YouTube embed) |
+| `PLAUSIBLE_DOMAIN` | Build | If set, injects the Plausible script. Otherwise no analytics |
 
-```
-src/
-├── components/        Astro components (Masthead, Nav, Footer, PlateCard, SEO heads)
-├── content/           Markdown + JSON managed by Keystatic
-│   ├── blog/          Journal posts
-│   ├── projects/      Portfolio case studies
-│   ├── plates/        Homepage plates configuration
-│   └── seo-keywords.json   Auto-link map: phrase → URL
-├── layouts/           BaseLayout (head, SEO, JSON-LD), PageLayout (with chrome)
-├── lib/
-│   ├── site.ts             Brand, contact, social constants — single source of truth
-│   ├── seo-rules.mjs       SEO audit rule library (used by CLI and build)
-│   ├── keyword-linker.mjs  Remark plugin that auto-links target keywords
-│   └── reading-time.ts
-├── pages/             File-based routes (index, blog, portfolio, lookbook, about, contact, admin/seo, og, api/contact)
-├── styles/global.css  All site styles (lifted verbatim from the original index.html, plus extensions)
-└── assets/uploads/    Keystatic-managed images (created on first upload)
+Bind a KV namespace named **`CONTACT_RL`** to the Pages project (contact
+rate-limit, 3/hour/IP).
 
-scripts/seo-check.mjs  CLI runner — walks dist/, runs every rule, writes dist/seo-report.json
-keystatic.config.ts    CMS schema (collections, fields, validation)
-astro.config.mjs       Site URL, integrations, markdown plugins
-vercel.json            Cache headers + redirects
-```
+## Adding a gallery — it's automatic
 
-## SEO
+You do **not** touch this repo to add photos. Upload via the existing
+theatunbiexperience.com admin (`/admin/gallery`), choosing the section
+(Weddings / Portraits / Events / Personal Work). Each section with photos
+becomes a gallery here and appears in the PORTFOLIO dropdown automatically on
+the next build. Trigger a rebuild with a **Cloudflare Pages Deploy Hook**:
 
-Every build runs through a custom auditor with twenty rules covering:
+1. Cloudflare Pages → project `classic-tatu` → Settings → Builds & deployments
+   → **Deploy hook** → create one, copy the URL.
+2. Add that URL to the main site's publish flow (the gallery commit handler
+   already pings `VERCEL_DEPLOY_HOOK_URL`; add the Pages hook alongside it, or
+   trigger manually) so a new upload rebuilds this site too.
 
-- **Heads** — title length, meta description length, canonical URLs, Open Graph completeness, charset, viewport, html lang.
-- **Headings** — exactly one `<h1>`, no skipped heading levels.
-- **Images** — alt text presence, width/height for CLS.
-- **Links** — every internal link resolves, page has ≥ 2 internal outbound links, external links use `rel="noopener"`.
-- **Keywords** — primary keyword in title/h1/intro, density not stuffed.
-- **Schema** — JSON-LD validates; `LocalBusiness`, `Article`, `BreadcrumbList`, `Person` emitted contextually.
-- **Indexing** — robots noindex sanity-check, sitemap inclusion.
+## Replace the placeholder logo
 
-The auditor writes `dist/seo-report.json`, which the in-app dashboard at `/admin/seo` renders into a per-page traffic-light table.
+`public/logo.svg` is a text placeholder. Drop the real wordmark there (keep
+the filename, ~200px wide) — no code change needed.
 
-## Keystatic CMS
+## Deploy (Cloudflare Pages)
 
-Visit `/keystatic` to:
+See `docs/ARCHITECTURE.md` for the full walkthrough. Summary:
 
-- Edit the homepage **Plates** singleton (six tiles + alt text).
-- Manage **Journal** blog posts (markdown, with required SEO fields).
-- Manage **Portfolio Projects** (case studies + galleries).
-- Edit the **SEO keyword auto-linker map**.
-
-Authentication is GitHub-based via the [Keystatic GitHub App](https://keystatic.com/docs/github-app). Install the app on the repo and set the env vars listed in `.env.example`.
-
-## Deploying to Vercel
-
-1. Connect the repo to Vercel — framework preset = Astro.
-2. Set environment variables (see `.env.example`).
-3. Push to `main` → automatic deploy. PRs get preview deployments.
-
-The default build command (`npm run build`) runs the SEO audit; **errors fail the deploy**, so bad SEO never reaches production.
-
-## Replacing the placeholder photos
-
-The homepage plates and `/about` portrait currently use CSS gradients with the "AT" / "A" mark. To replace them with real photographs:
-
-1. Open `/keystatic` → **Homepage Plates**.
-2. For each plate, click "Image" → upload — alt text is required.
-3. Save → Keystatic commits to `main` → Vercel rebuilds in ~60s.
-
-Same flow for **Portfolio Projects** (hero + gallery) and **Journal** posts (hero image).
-
-## Adding a blog post
-
-Either:
-
-- **CMS path** (recommended): `/keystatic` → Journal → New post. Form-validated.
-- **Direct path**: drop a markdown file in `src/content/blog/` matching the schema in `src/content/config.ts`. Push to deploy.
-
-Schema enforces: title 10–70 chars, description 50–170 chars, ≥ 1 keyword, valid category, required publish date. The build will fail if any required field is missing.
-
-## What still needs real values
-
-- **Domain**: site URL is currently `https://www.theatunbiexperience.co.uk` — update `src/lib/site.ts` and `astro.config.mjs` `SITE_URL` if different.
-- **Phone**: `+44 (0) 20 0000 0000` is a placeholder — update `CONTACT.phone` and `CONTACT.phoneDisplay` in `src/lib/site.ts`.
-- **Real photos**: see above.
-- **Email**: `hello@atunbi.com` is the default; change in `src/lib/site.ts` if needed.
-
-## Old single-page version
-
-The original single-file design lives in git history (see commit before the Astro migration). Open the site repo on GitHub to view it.
+1. Push this repo to GitHub.
+2. Cloudflare Pages → Create project → connect the repo. Build command
+   `pnpm build`, output dir `dist`.
+3. Set the env vars above; bind the `CONTACT_RL` KV namespace.
+4. Add custom domain `classic.theatunbiexperience.com`; create the proxied
+   CNAME in the theatunbiexperience.com Cloudflare DNS zone.
+5. Verify HTTPS, run Lighthouse, click through galleries + lightbox + form.
