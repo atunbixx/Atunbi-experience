@@ -24,11 +24,5 @@
       ]
     }
   ],
-  "redirects": [
-    {
-      "source": "/((?!admin|api|_astro|uploads|favicon|robots|og|rss).*)",
-      "destination": "https://classic.theatunbiexperience.com/$1",
-      "permanent": true
-    }
-  ]
+  "redirects": []
 }
